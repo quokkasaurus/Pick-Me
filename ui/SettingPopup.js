@@ -25,16 +25,16 @@ export default class SettingPopup {
     // Background
    const bg = this.scene.add.image(0, 0, "setting_bg")
    .setOrigin(0.5)
-   bg.setDisplaySize(400, 200);
+   bg.setDisplaySize(500, 250);
    bg.setInteractive();   
    this.popup.add(bg);
 
 
     // SOUND Control
-    this.soundBtn = this.scene.add.image(-80, -40,
+    this.soundBtn = this.scene.add.image(-60, 0,
       this.iconKeys[0][this.soundStatus])
       .setOrigin(0.5)
-      .setDisplaySize(80, 80)
+      .setDisplaySize(100, 100)
       .setInteractive({ useHandCursor: true });
     this.popup.add(this.soundBtn);
 
@@ -46,10 +46,10 @@ export default class SettingPopup {
     });
 
     // MUSIC Control
-    this.musicBtn = this.scene.add.image(-80, 48,
+    this.musicBtn = this.scene.add.image(-170, 0,
       this.iconKeys[1][this.musicStatus])
       .setOrigin(0.5)
-      .setDisplaySize(80, 80)
+      .setDisplaySize(100, 100)
       .setInteractive({ useHandCursor: true });
     this.popup.add(this.musicBtn);
 
