@@ -64,6 +64,8 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("quest_claimed", "assets/quest_claimed.png");
     this.load.image("exit_button", "assets/exit_button.png");
     this.load.image("yes_button", "assets/yes_button.png");
+    this.load.image("quest_bg1", "assets/quest_bg1.png");
+    this.load.image("quest_bg2", "assets/quest_bg2.png");
     //Mail Button
     this.load.image("mailBtn", "assets/mailBtn.png");
     this.load.image("mail_icon", "assets/mail_icon.png");
