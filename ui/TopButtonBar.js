@@ -73,14 +73,33 @@ export default class TopButtonBar {
                    this.settingPopup.show();
          } else if (label === '공지') {
             // Example notice data
-             const noticeList = [
-             { 
-              title: "공지공지공지공지공지공지업데이트안내",
-              text: "공지공지공지공지공지공지업데이트안내\n공지공지공지공지공지공지업데이트안내\n공지공지공지공지공지공지업데이트안내"
-             },
-            { title: "새 이벤트 공지", text: "새로운 이벤트가 추가되었습니다!" }
-            ];
-             this.noticePopup.show(noticeList);
+              const noticeList = [
+    {
+      type: '공지 사항',                 // pink
+      date: '9999. 99. 99',
+      title: '공지 안내',
+      text: '공지공지공지공지공지공지업데이트안내\n공지공지공지공지공지공지업데이트안내\n공지공지공지공지공지공지업데이트안내'
+    },
+    {
+      type: '이벤트 공지',               // yellow
+      date: '9999. 99. 99',
+      title: '새 이벤트 공지',
+      text: '새로운 이벤트가 추가되었습니다!'
+    },
+    {
+      type: '개발자 노트',               // green
+      date: '9999. 99. 99',
+      title: '개발자 노트 예시',
+      text: '개발 노트 내용...'
+    },
+    {
+      type: '업데이트',                 // blue
+      date: '9999. 99. 99',
+      title: '업데이트 안내',
+      text: '업데이트 내용...'
+    }
+  ];
+  this.noticePopup.show(noticeList);
     } else {
         this.showSimplePopup(label + ' 팝업입니다');
     }

@@ -18,16 +18,16 @@ export default class MailPopup {
         // Main mail popup
         this.popup = this.scene.add.container(centerX, centerY);
 
-       // 1) Main background (mail_bg1)
-  const bg = this.scene.add.image(0, 0, 'mail_bg1').setOrigin(0.5);
+       // 1) Main background (popup_bg1)
+  const bg = this.scene.add.image(0, 0, 'popup_bg1').setOrigin(0.5);
   bg.setDisplaySize(500, 700);
   this.popup.add(bg);
 
   const width  = bg.displayWidth;
   const height = bg.displayHeight;
 
-  // 2) Outline area (mail_outline) – this defines the visible scroll window
-  const outline = this.scene.add.image(0, 0, 'mail_outline').setOrigin(0.5);
+  // 2) Outline area – this defines the visible scroll window
+  const outline = this.scene.add.image(0, 0, 'popup_outline').setOrigin(0.5);
   outline.setDisplaySize(450, 650);
   this.popup.add(outline);
 
@@ -150,7 +150,7 @@ export default class MailPopup {
 
   this.innerPopup = this.scene.add.container(centerX, centerY);
 
-  const bg = this.scene.add.image(0, 0, 'mail_bg1')
+  const bg = this.scene.add.image(0, 0, 'popup_bg1')
     .setOrigin(0.5);
     bg.setDisplaySize(500, 700);
   this.innerPopup.add(bg);
