@@ -25,14 +25,16 @@ export default class BottomNavBar {
     const startXNav = centerXNav - totalWidth / 2 + this.circleRadius;
     const navY = this.navY;
     const arrowOffset = 60;
-    const arrowSize = 60;
 
-    // Left Arrow
-    const leftArrow = this.scene.add.triangle(
-      startXNav - this.circleRadius + 2 - arrowOffset, navY,
-      arrowSize, 0, 0, arrowSize / 2, arrowSize, arrowSize, 0x222222
-    ).setInteractive({ useHandCursor: true });
+    const leftArrow = this.scene.add.image(
+      startXNav - this.circleRadius - arrowOffset,
+      navY,
+      'navbar_left'
+    )
+      .setDisplaySize(60, 60)
+      .setInteractive({ useHandCursor: true });
 
+    // === NAV BUTTONS (image-based) ===
     this.labels.forEach((label, i) => {
       const x = startXNav + i * (this.circleRadius * 2 + this.circleGap);
 
@@ -52,14 +54,17 @@ export default class BottomNavBar {
       });
     });
 
-
-
-
-    // Right Arrow
-    const rightArrow = this.scene.add.triangle(
-      startXNav + (this.n - 1) * (this.circleRadius * 2 + this.circleGap) + this.circleRadius + arrowOffset, navY,
-      0, 0, arrowSize, arrowSize / 2, 0, arrowSize, 0x222222
-    ).setInteractive({ useHandCursor: true });
+    // === RIGHT ARROW (image) ===
+    const rightArrow = this.scene.add.image(
+      startXNav +
+        (this.n - 1) * (this.circleRadius * 2 + this.circleGap) +
+        this.circleRadius +
+        arrowOffset,
+      navY,
+      'navbar_right'
+    )
+      .setDisplaySize(60, 60)
+      .setInteractive({ useHandCursor: true });
 
     // === PAGE NAVIGATION LOGIC ===
     const currentSceneKey = this.scene.scene.key;
@@ -67,19 +72,20 @@ export default class BottomNavBar {
 
     // Left arrow → previous scene
     leftArrow.on('pointerdown', () => {
-      const prevIndex = (currentIndex - 1 + this.mainScenes.length) % this.mainScenes.length;
+      const prevIndex =
+        (currentIndex - 1 + this.mainScenes.length) %
+        this.mainScenes.length;
       const targetScene = this.mainScenes[prevIndex];
-      console.log(`Left arrow → going to ${targetScene}`);
       this.scene.scene.start(targetScene);
     });
 
     // Right arrow → next scene
     rightArrow.on('pointerdown', () => {
-      const nextIndex = (currentIndex + 1) % this.mainScenes.length;
+      const nextIndex =
+        (currentIndex + 1) %
+        this.mainScenes.length;
       const targetScene = this.mainScenes[nextIndex];
-      console.log(`Right arrow → going to ${targetScene}`);
       this.scene.scene.start(targetScene);
     });
-
   }
 }
