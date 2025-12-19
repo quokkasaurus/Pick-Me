@@ -17,6 +17,7 @@ export default class GameScene extends Phaser.Scene {
     // Lever and capsule assets
     this.load.image('LeftLever', 'assets/LeftLever.png');
     this.load.image('RightLever', 'assets/RightLever.png');
+    this.load.image("LeverDefault", "assets/game_lever_default.png");
     this.load.image('CapsuleDrop', 'assets/CapsuleDrop.png');
     this.load.image('CapsuleOpen', 'assets/CapsuleOpen.png');
     this.load.image('CapsuleOpen_Yellow', 'assets/CapsuleOpen_Yellow.png');
@@ -58,10 +59,12 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("popup_bg1", "assets/popup_bg1.png");
     this.load.image("popup_outline", "assets/popup_outline.png");
     // bottom nav bar
+    this.load.image("navbar_left", "assets/navbar_left.png");
     this.load.image("navbar_theme", "assets/navbar_theme.png");
     this.load.image("navbar_bag", "assets/navbar_bag.png");
     this.load.image("navbar_store", "assets/navbar_store.png");
     this.load.image("navbar_collection", "assets/navbar_collection.png");
+    this.load.image("navbar_right", "assets/navbar_right.png");
     //Quest Button
     this.load.image("questBtn", "assets/questBtn.png");
     this.load.image("quest_coin", "assets/quest_coin.png");
