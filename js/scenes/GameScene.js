@@ -109,6 +109,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("notice_type", "assets/notice_type.png");
     //coin
     this.load.image("coin", "assets/coin.png");
+    this.load.image("coin_bar", "assets/coin_bar.png");
     //Store
     this.load.image("store_bg", "assets/store_bg.png");
     this.load.image("store_enhance", "assets/store_enhance.png");
