@@ -5,8 +5,8 @@ export default class CollectionPopup {
     this.scene = scene;
     this.popupContainer = null;
 
-    this.detailContainer = null;   // fixed yellow card (item tab)
-    this.scrollContainer = null;   // scrollable list / grid
+    this.fixedUIContainer = null;
+    this.scrollContainer  = null;
 
     this.scrollY = 0;
     this.scrollBounds = { min: 0, max: 0 };
@@ -60,6 +60,10 @@ export default class CollectionPopup {
     const scene   = this.scene;
     const centerX = scene.cameras.main.centerX;
     const centerY = scene.cameras.main.centerY;
+
+    // createPopup
+    this.fixedUIContainer = scene.add.container(0, 0);
+    this.scrollContainer  = scene.add.container(0, 0);
 
     this.popupContainer = scene.add.container(0, 0);
     this.popupContainer.setVisible(false);
@@ -171,8 +175,8 @@ export default class CollectionPopup {
     ).setStrokeStyle(0.5, 0x000000);
 
     // Containers
-    this.detailContainer = scene.add.container(0, 0);   // fixed card (item tab)
-    this.scrollContainer = scene.add.container(0, 0);   // scrollable content
+    this.fixedUIContainer = scene.add.container(0, 0);  
+    this.scrollContainer  = scene.add.container(0, 0);
 
     // Mask only for scrollContainer
     const maskGfx = scene.make.graphics({});
@@ -226,16 +230,15 @@ export default class CollectionPopup {
        .fillStyle(0xff0000, 1)
        .fillRoundedRect(-18, -18, 30, 30, 10));
 
-    this.popupContainer.add([
-      overlay,
-      box,
-      counterBg,
-      chatIcon,
-      counterText,
+    this.fixedUIContainer.add([
       ...this.tabButtons,
       ...this.tabTexts,
-      this.listMaskArea,
-      this.detailContainer,
+      this.listMaskArea
+    ]);
+
+    this.popupContainer.add([
+      overlay, box, counterBg, chatIcon, counterText,
+      this.fixedUIContainer,
       this.scrollContainer,
       exitContainer
     ]);
@@ -256,9 +259,14 @@ export default class CollectionPopup {
 
   refreshList() {
     this.scrollContainer.removeAll(true);
-    if (this.detailContainer) {
-      this.detailContainer.removeAll(true);
-    }
+
+    // remove ONLY detail card elements, keep tabs
+    this.fixedUIContainer.list
+      .filter(obj => obj.__isDetailCard)
+      .forEach(obj => {
+        this.fixedUIContainer.remove(obj, true);
+    });
+
 
     const scene   = this.scene;
     const centerX = scene.cameras.main.centerX;
@@ -313,7 +321,7 @@ export default class CollectionPopup {
         0xffffff
       ).setStrokeStyle(1, 0xf4b400);
 
-      this.detailContainer.add([detailOuter, thumb, titleText, descText, infoBar]);
+      this.fixedUIContainer.add([detailOuter, thumb, titleText, descText, infoBar]);
 
       // scrollable grid area under the card
       const cols       = 4;
@@ -324,7 +332,9 @@ export default class CollectionPopup {
 
       const totalWidth = cols * cardWidth + (cols - 1) * hGap;
       const gridStartX = centerX - totalWidth / 2 + cardWidth / 2;
-      const gridStartY = cardY + 140; // inside mask
+      const gridStartY = this.listMaskArea.y - this.visibleHeight / 2 + 260;
+
+
 
       for (let i = 0; i < this.itemsData.length; i++) {
         const row = Math.floor(i / cols);
@@ -356,8 +366,8 @@ export default class CollectionPopup {
 
       const totalRows  = Math.ceil(this.itemsData.length / cols);
       const gridHeight = totalRows * cardHeight + (totalRows - 1) * vGap;
-      const visible    = this.listMaskArea.height;
-      const maxScroll  = Math.max(0, gridHeight - visible);
+      const visibleGridHeight = this.visibleHeight - 260;
+      const maxScroll = Math.max(0, gridHeight - visibleGridHeight);
 
       this.scrollBounds.max = maxScroll;
       this.scrollBounds.min = 0;
