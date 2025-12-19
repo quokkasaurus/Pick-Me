@@ -18,27 +18,27 @@ export default class QuestPopup {
         }
 
         // Calculate center for popup
-       const cam = this.scene.cameras.main;
-  const centerX = cam.centerX;
-  const centerY = cam.centerY;
+        const cam = this.scene.cameras.main;
+        const centerX = cam.centerX;
+        const centerY = cam.centerY;
 
-  // layer that holds overlay + popup
-  this.popupLayer = this.scene.add.container(0, 0);
+        // layer that holds overlay + popup
+        this.popupLayer = this.scene.add.container(0, 0);
 
-  // full-screen dim overlay
-  const overlay = this.scene.add.rectangle(
-    cam.centerX,
-    cam.centerY,
-    this.scene.scale.width,
-    this.scene.scale.height,
-    0x000000,
-    0.5
-  ).setOrigin(0.5).setInteractive();
-  this.popupLayer.add(overlay);
+        // full-screen dim overlay
+        const overlay = this.scene.add.rectangle(
+            cam.centerX,
+            cam.centerY,
+            this.scene.scale.width,
+            this.scene.scale.height,
+            0x000000,
+            0.5
+        ).setOrigin(0.5).setInteractive();
+        this.popupLayer.add(overlay);
 
-  // popup container on top of overlay
-  this.popup = this.scene.add.container(centerX, centerY);
-  this.popupLayer.add(this.popup);
+        // popup container on top of overlay
+        this.popup = this.scene.add.container(centerX, centerY);
+        this.popupLayer.add(this.popup);
 
         // Sizing constants
         const bgWidth = 500;
@@ -249,15 +249,15 @@ export default class QuestPopup {
         ).setOrigin(0.5).setDisplaySize(xBtnSize, xBtnSize).setInteractive({ useHandCursor: true });
 
         closeBtn.on('pointerdown', () => {
-           if (this.popupLayer) {
-    this.popupLayer.destroy();
-    this.popupLayer = null;
-  }
-  this.popup = null;
-  if (this.timerEvent) {
-    this.timerEvent.remove();
-    this.timerEvent = null;
-  }
+            if (this.popupLayer) {
+                this.popupLayer.destroy();
+                this.popupLayer = null;
+            }
+            this.popup = null;
+            if (this.timerEvent) {
+                this.timerEvent.remove();
+                this.timerEvent = null;
+            }
         });
         this.popup.add(closeBtn);
     }
