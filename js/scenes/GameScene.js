@@ -102,6 +102,13 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("notice_type", "assets/notice_type.png");
     //coin
     this.load.image("coin", "assets/coin.png");
+    //Store
+    this.load.image("store_bg", "assets/store_bg.png");
+    this.load.image("store_enhance", "assets/store_enhance.png");
+    this.load.image("store_interior", "assets/store_interior.png");
+    this.load.image("store_price", "assets/store_price.png");
+    this.load.image("store_buy", "assets/store_buy.png");
+    this.load.image("store_buyComplete", "assets/store_buyComplete.png");
     // Other images can be add here too
   }
 
@@ -114,6 +121,7 @@ export default class GameScene extends Phaser.Scene {
 
     // Create UI components (in order from  top to bottom of the page)
     this.topButtonBar = new TopButtonBar(this, startX, startY);
+    this.coinBar = new CoinBar(this, startX - 700, startY + 25);
     this.collectionPopup = new CollectionPopup(this);
     this.collectionPopup.createPopup();
     this.categoryGroup = new CategoryButtonGroup(this, centerX, (label) => this.onCategoryClicked(label));
@@ -124,8 +132,8 @@ export default class GameScene extends Phaser.Scene {
     this.Lever.createLever();
     this.createProgressBar();
     this.Lever.setProgressBarUpdateCallback(this.updateProgressBarUI.bind(this));
-    this.storePopup = new StorePopup(this);
-    this.coinBar = new CoinBar(this, startX - 700, startY + 25);
+    this.playerState = { coins: 999999, bagSlots: 20, clickLevel: 1 };
+    this.storePopup = new StorePopup(this, this.playerState)
   }
 
   createProgressBar() {
