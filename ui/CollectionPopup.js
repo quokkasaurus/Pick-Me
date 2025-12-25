@@ -401,7 +401,7 @@ export default class CollectionPopup {
           .setOrigin(0.5);
         starImg.setDisplaySize(34, 34);
 
-          // add AFTER bg so they appear on top
+        // add AFTER bg so they appear on top
         this.scrollContainer.add([frameImg, starImg]);
       }
 
@@ -415,8 +415,23 @@ export default class CollectionPopup {
           0x000000,
           0.5
         );
-         // overlay should be above everything for locked rows
+        // overlay should be above everything for locked rows
         this.scrollContainer.add(overlay);
+      }
+
+      const hasThreeFullStars = item.status[0] && item.status[1] && item.status[2] && !item.locked;
+
+      // existing bg + text:
+      this.scrollContainer.add([rowBg, nameText]);
+
+      if (hasThreeFullStars) {
+        // make the whole row clickable
+        rowBg.setInteractive({ useHandCursor: true });
+        nameText.setInteractive({ useHandCursor: true });
+
+        const openDetail = () => this.showStoryDetail(item);
+        rowBg.on('pointerdown', openDetail);
+        nameText.on('pointerdown', openDetail);
       }
     }
 
@@ -444,5 +459,114 @@ export default class CollectionPopup {
     if (this.popupContainer) {
       this.popupContainer.setVisible(false);
     }
+  }
+  // item: a story object from this.itemsData
+  showStoryDetail(item) {
+    const scene = this.scene;
+    const centerX = scene.cameras.main.centerX;
+    const centerY = scene.cameras.main.centerY;
+
+    // simple container so we can destroy everything at once
+    if (this.detailContainer) {
+      this.detailContainer.destroy();
+    }
+    this.detailContainer = scene.add.container(0, 0).setDepth(1000);
+
+    // dim background
+    const overlay = scene.add.rectangle(
+      centerX,
+      centerY,
+      scene.cameras.main.width,
+      scene.cameras.main.height,
+      0x000000,
+      0.5
+    ).setInteractive();
+
+    // main bg (collection_bg3)
+    const bg = scene.add.image(centerX, centerY, 'collection_bg3')
+      .setOrigin(0.5);
+    bg.displayWidth = 500;
+    bg.displayHeight = 600;
+
+    const popupLeft = centerX - bg.displayWidth / 2;
+    const popupTop = centerY - bg.displayHeight / 2;
+    const popupBottom = centerY + bg.displayHeight / 2;
+
+    // title background + text
+    const titleBg = scene.add.image(centerX, popupTop + 55, 'collection_title_bg')
+      .setOrigin(0.5);
+
+    const titleText = scene.add.text(
+      centerX,
+      titleBg.y,
+      item.name, // "토토의 기다림"
+      {
+        fontSize: '22px',
+        color: '#000000',
+        fontFamily: 'Arial'
+      }
+    ).setOrigin(0.5);
+
+    // story body bg (collection_bg2)
+    const storyBg = scene.add.image(centerX, centerY, 'collection_bg2')
+      .setOrigin(0.5);
+    storyBg.displayWidth = 460;
+    storyBg.displayHeight = 360;
+
+    const storyText = scene.add.text(
+      storyBg.x - storyBg.displayWidth / 2 + 20,
+      storyBg.y - storyBg.displayHeight / 2 + 20,
+      '골든 리트리버, 토토는 오늘도 입구에 앉아 주인을 기다린다.\n' +
+      '"토토, 주인이 오려면 한참 기다려야 해.”\n' +
+      '"알아요."\n' +
+      '"언덕에 가서 친구들이랑 놀고 있어. 심심하지 않아?"\n' +
+      '하지만 토토는 고개를 저으며 말했다.\n' +
+      '"나는 기다리는 거 잘해요. 그리고 전혀 심심하지 않아요.\n' +
+      '왜냐면 주인님은 꼭 올거니까요."\n' +
+      '골든 리트리버 토토는 빨간 목도리를 목에 메고 혹시나 주인이 빨리\n' +
+      '올까봐 마음을 졸이며 고개를 기웃거린다.\n' +
+      '이 목도리를 메고 있다면 주인이 한 눈에 자신을 알아볼까하고 말이',
+      {
+        fontSize: '16px',
+        color: '#000000',
+        fontFamily: 'Arial',
+        wordWrap: { width: storyBg.displayWidth - 40 }
+      }
+    ).setOrigin(0, 0);
+
+    // 3 gacha cards along bottom
+    const gachaY = popupBottom - 60;
+    const spacing = 140;
+    const startX = centerX - spacing;
+
+    const gachaCards = [];
+    for (let i = 0; i < 3; i++) {
+      const card = scene.add.image(startX + i * spacing, gachaY, 'collection_gacha')
+        .setOrigin(0.5)
+        .setScale(0.8);
+      gachaCards.push(card);
+    }
+
+    // close button (reuse exit_button style)
+    const closeBtn = scene.add.image(popupLeft + 32, popupBottom - 32, 'exit_button')
+      .setOrigin(0.5)
+      .setDisplaySize(48, 48)
+      .setInteractive({ useHandCursor: true });
+
+    closeBtn.on('pointerdown', () => {
+      this.detailContainer.destroy();
+      this.detailContainer = null;
+    });
+
+    this.detailContainer.add([
+      overlay,
+      bg,
+      titleBg,
+      titleText,
+      storyBg,
+      storyText,
+      ...gachaCards,
+      closeBtn
+    ]);
   }
 }
