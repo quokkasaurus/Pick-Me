@@ -6,7 +6,7 @@ export default class CollectionPopup {
     this.popupContainer = null;
 
     this.fixedUIContainer = null;
-    this.scrollContainer  = null;
+    this.scrollContainer = null;
 
     this.scrollY = 0;
     this.scrollBounds = { min: 0, max: 0 };
@@ -17,14 +17,14 @@ export default class CollectionPopup {
 
     this.itemsData = this.generateTestData();
 
-    this.visibleHeight   = 550;
-    this.itemHeight      = 80;
-    this.tabHeight       = 40;
-    this.extraTopSpace   = 30;
-    this.listWidth       = 440;
-    this.listBgWidth     = 400;
-    this.popupWidth      = 500;
-    this.popupHeight     = 700;
+    this.visibleHeight = 550;
+    this.itemHeight = 80;
+    this.tabHeight = 40;
+    this.extraTopSpace = 30;
+    this.listWidth = 440;
+    this.listBgWidth = 400;
+    this.popupWidth = 500;
+    this.popupHeight = 700;
   }
 
   // IMPORTANT:
@@ -39,17 +39,17 @@ export default class CollectionPopup {
 
   generateTestData() {
     const base = [
-      { name: '토토의 기다림', status: [true, true, true, true],  locked: false },
+      { name: '토토의 기다림', status: [true, true, true, true], locked: false },
       { name: '토토의 기다림', status: [true, true, true, false], locked: false },
-      { name: '토토의 기다림', status: [true, true, true, true],  locked: false },
+      { name: '토토의 기다림', status: [true, true, true, true], locked: false },
       { name: '이름이름이름이름', status: [true, true, false, false], locked: false },
       { name: '이름이름이름이름', status: [true, false, false, false], locked: false },
-      { name: '이름이름이름이름', status: [false, false, false, false], locked: true  },
-      { name: '이름이름이름이름', status: [false, false, false, false], locked: true  },
-      { name: '이름이름이름이름', status: [false, false, false, false], locked: true  },
-      { name: '이름이름이름이름', status: [false, false, false, false], locked: true  },
-      { name: '이름이름이름이름', status: [false, false, false, false], locked: true  },
-      { name: '이름이름이름이름', status: [true, true, false, false],  locked: false },
+      { name: '이름이름이름이름', status: [false, false, false, false], locked: true },
+      { name: '이름이름이름이름', status: [false, false, false, false], locked: true },
+      { name: '이름이름이름이름', status: [false, false, false, false], locked: true },
+      { name: '이름이름이름이름', status: [false, false, false, false], locked: true },
+      { name: '이름이름이름이름', status: [false, false, false, false], locked: true },
+      { name: '이름이름이름이름', status: [true, true, false, false], locked: false },
       { name: '이름이름이름이름', status: [true, false, false, false], locked: false }
     ];
     // plenty of items to scroll through
@@ -57,13 +57,13 @@ export default class CollectionPopup {
   }
 
   createPopup() {
-    const scene   = this.scene;
+    const scene = this.scene;
     const centerX = scene.cameras.main.centerX;
     const centerY = scene.cameras.main.centerY;
 
     // createPopup
     this.fixedUIContainer = scene.add.container(0, 0);
-    this.scrollContainer  = scene.add.container(0, 0);
+    this.scrollContainer = scene.add.container(0, 0);
 
     this.popupContainer = scene.add.container(0, 0);
     this.popupContainer.setVisible(false);
@@ -79,89 +79,63 @@ export default class CollectionPopup {
       0.5
     ).setInteractive();
 
-    // Main popup box (grey, like your mock)
-    const box = scene.add.rectangle(
-      centerX,
-      centerY,
-      this.popupWidth,
-      this.popupHeight,
-      0x7f7f7f
-    ).setStrokeStyle(2, 0x000000);
+    // background image instead of grey box
+    const bgImage = scene.add.image(centerX, centerY, 'collection_bg');
+    bgImage.setDisplaySize(this.popupWidth, this.popupHeight);
 
-    const popupLeft   = centerX - this.popupWidth  / 2;
-    const popupTop    = centerY - this.popupHeight / 2;
-    const popupRight  = centerX + this.popupWidth  / 2;
+
+    const popupLeft = centerX - this.popupWidth / 2;
+    const popupTop = centerY - this.popupHeight / 2;
+    const popupRight = centerX + this.popupWidth / 2;
     const popupBottom = centerY + this.popupHeight / 2;
 
-    // Top-right "4 / 12" bubble (roughly matching mock)
-    const counterBg = scene.add.rectangle(
-      popupRight - 60,
-      popupTop + 30,
-      90,
-      32,
-      0xf5f5f5
-    ).setStrokeStyle(2, 0x000000);
+    // total stories area (top‑right)
+    const totalBg = scene.add.image(popupRight - 70, popupTop + 40, 'collection_total_bg')
+      .setOrigin(0.5)
+      .setScale(0.9);
+    // optional scaling if needed:
+    // totalBg.setDisplaySize(110, 36);
 
-    const counterText = scene.add.text(
-      counterBg.x -5,
-      counterBg.y,
+    const bookIcon = scene.add.image(totalBg.x - totalBg.displayWidth * 0.35, totalBg.y, 'collection_book_open')
+      .setOrigin(0.5);
+
+    this.totalText = scene.add.text(
+      totalBg.x + totalBg.displayWidth * 0.02,
+      totalBg.y,
       '4 / 12',
-      { fontSize: '16px', color: '#000', fontFamily: 'Arial' }
+      { fontSize: '16px', color: '#000000', fontFamily: 'Arial' }
     ).setOrigin(0, 0.5);
 
-    // Optional chat icon on left side of that bubble
-    let chatIcon;
-    if (scene.textures.exists('chat_icon')) {
-      chatIcon = scene.add.image(counterBg.x - 20, counterBg.y, 'chat_icon')
-        .setOrigin(0.5)
-        .setDisplaySize(20, 20);
-    } else {
-      // fallback: simple box icon
-      chatIcon = scene.add.rectangle(counterBg.x - 30, counterBg.y, 16, 14, 0xffffff)
-        .setStrokeStyle(2, 0x000000);
-    }
+
 
     // Tabs (스토리 / 아이템)
-    const tabLeft    = popupLeft + 80;
-    const tabSpacing = 120;
-    const tabY       = popupTop + this.tabHeight / 2 + 25;
+    const tabY = popupTop + 40;
+    const storyTabX = popupLeft + 100;
+    const itemTabX = popupLeft + 220;
 
-    const tabs = [
-      { key: 'story', label: '스토리', x: tabLeft },
-      { key: 'item',  label: '아이템', x: tabLeft + tabSpacing }
-    ];
+    const makeTab = (key, x, clickedKey, unclickedKey) => {
+      const isSelected = this.selectedTab === key;
+      const textureKey = isSelected ? clickedKey : unclickedKey;
 
-    this.tabButtons = [];
-    this.tabTexts   = [];
+      const img = scene.add.image(x, tabY, textureKey)
+        .setOrigin(0.5)
+        .setScale(0.4)
+        .setInteractive({ useHandCursor: true });
 
-    tabs.forEach(tab => {
-      const isSelected = tab.key === this.selectedTab;
-
-      const btn = scene.add.rectangle(
-        tab.x,
-        tabY,
-        110,
-        this.tabHeight,
-        isSelected ? 0x444444 : 0xcccccc
-      ).setStrokeStyle(0.5, 0x000000)
-       .setInteractive({ useHandCursor: true });
-
-      btn.on('pointerdown', () => {
-        this.selectedTab = tab.key;
+      img.on('pointerdown', () => {
+        if (this.selectedTab === key) return;
+        this.selectedTab = key;
         this.refreshTabs();
         this.refreshList();
       });
 
-      this.tabButtons.push(btn);
+      return img;
+    };
 
-      const txt = scene.add.text(tab.x, tabY, tab.label, {
-        fontSize: '20px',
-        color: isSelected ? '#ffffff' : '#000000',
-        fontFamily: 'Arial'
-      }).setOrigin(0.5);
-
-      this.tabTexts.push(txt);
-    });
+    this.tabButtons = [
+      makeTab('story', storyTabX, 'collection_story_clicked', 'collection_story_unclicked'),
+      makeTab('item', itemTabX, 'collection_item_clicked', 'collection_item_unclicked')
+    ];
 
     // Scrollable grey list area (below tabs)
     const maskTopY = tabY + (this.tabHeight / 2) + this.extraTopSpace;
@@ -171,12 +145,10 @@ export default class CollectionPopup {
       maskTopY + this.visibleHeight / 2,
       this.listWidth,
       this.visibleHeight,
-      0xb0b0b0
-    ).setStrokeStyle(0.5, 0x000000);
-
-    // Containers
-    this.fixedUIContainer = scene.add.container(0, 0);  
-    this.scrollContainer  = scene.add.container(0, 0);
+      0xffffff,
+      0 // invisible, just helper
+    );
+    this.listMaskArea.setVisible(false);
 
     // Mask only for scrollContainer
     const maskGfx = scene.make.graphics({});
@@ -197,50 +169,50 @@ export default class CollectionPopup {
       this.updateScroll();
     });
 
-    // --- Bottom-left rounded-square red "X" button ---
-    const exitContainer = scene.add.container(
-      popupLeft + 45,            // padding from left
-      popupBottom - 35           // padding from bottom
-    );
 
-    // draw a rounded square with Graphics so we can have radius
-    const exitGfx = scene.add.graphics();
-    exitGfx.fillStyle(0xff0000, 1);
-    exitGfx.fillRoundedRect(-18, -18, 30, 30, 10);  // centered around (0,0)
+    // --- Bottom-left exit button ---
+    let exitButton;
+    if (scene.textures.exists('exit_button')) {
+      exitButton = scene.add.image(popupLeft + 32, popupBottom - 32, 'exit_button')
+        .setOrigin(0.5)
+        .setDisplaySize(48, 48)
+        .setInteractive({ useHandCursor: true });
 
-    const exitText = scene.add.text(-2, -2, 'X', {
-      fontSize: '22px',
-      fontStyle: 'bold',
-      color: '#000000',
-      fontFamily: 'Arial'
-    }).setOrigin(0.5);
-
-    exitContainer.add([exitGfx, exitText]);
-
-    // make the whole container interactive
-    exitContainer.setSize(30, 30);
-    exitContainer.setInteractive(
-      new Phaser.Geom.Rectangle(-18, -18, 30, 30),
-      Phaser.Geom.Rectangle.Contains
-    ).on('pointerdown', () => this.hidePopup())
-     .on('pointerover', () => exitGfx.clear()
-       .fillStyle(0xff4444, 1)
-       .fillRoundedRect(-18, -18, 30, 30, 10))
-     .on('pointerout', () => exitGfx.clear()
-       .fillStyle(0xff0000, 1)
-       .fillRoundedRect(-18, -18, 30, 30, 10));
+      exitButton.on('pointerdown', () => this.hidePopup());
+    } else {
+      const exitContainer = scene.add.container(popupLeft + 45, popupBottom - 35);
+      const exitGfx = scene.add.graphics();
+      exitGfx.fillStyle(0xff0000, 1);
+      exitGfx.fillRoundedRect(-18, -18, 30, 30, 10);
+      const exitText = scene.add.text(-2, -2, 'X', {
+        fontSize: '22px',
+        fontStyle: 'bold',
+        color: '#000000',
+        fontFamily: 'Arial'
+      }).setOrigin(0.5);
+      exitContainer.add([exitGfx, exitText]);
+      exitContainer.setSize(30, 30);
+      exitContainer.setInteractive(
+        new Phaser.Geom.Rectangle(-18, -18, 30, 30),
+        Phaser.Geom.Rectangle.Contains
+      ).on('pointerdown', () => this.hidePopup());
+      exitButton = exitContainer;
+    }
 
     this.fixedUIContainer.add([
       ...this.tabButtons,
-      ...this.tabTexts,
       this.listMaskArea
     ]);
 
     this.popupContainer.add([
-      overlay, box, counterBg, chatIcon, counterText,
+      overlay,
+      bgImage,
+      totalBg,
+      bookIcon,
+      this.totalText,
       this.fixedUIContainer,
       this.scrollContainer,
-      exitContainer
+      exitButton
     ]);
 
     this.scene.add.existing(this.popupContainer);
@@ -248,12 +220,15 @@ export default class CollectionPopup {
   }
 
   refreshTabs() {
-    for (let i = 0; i < this.tabButtons.length; i++) {
-      const key = (i === 0) ? 'story' : 'item';
-      const isSelected = this.selectedTab === key;
-      this.tabButtons[i].fillColor = isSelected ? 0x444444 : 0xcccccc;
-      this.tabButtons[i].setStrokeStyle(0.5, 0x000000);
-      this.tabTexts[i].setColor(isSelected ? '#ffffff' : '#000000');
+    const [storyBtn, itemBtn] = this.tabButtons;
+    if (!storyBtn || !itemBtn) return;
+
+    if (this.selectedTab === 'story') {
+      storyBtn.setTexture('collection_story_clicked');
+      itemBtn.setTexture('collection_item_unclicked');
+    } else {
+      storyBtn.setTexture('collection_story_unclicked');
+      itemBtn.setTexture('collection_item_clicked');
     }
   }
 
@@ -265,12 +240,12 @@ export default class CollectionPopup {
       .filter(obj => obj.__isDetailCard)
       .forEach(obj => {
         this.fixedUIContainer.remove(obj, true);
-    });
+      });
 
 
-    const scene   = this.scene;
+    const scene = this.scene;
     const centerX = scene.cameras.main.centerX;
-    const startY  = this.itemsStartY;
+    const startY = this.itemsStartY;
 
     // ------------------- ITEM TAB -------------------
     if (this.selectedTab === 'item') {
@@ -324,11 +299,11 @@ export default class CollectionPopup {
       this.fixedUIContainer.add([detailOuter, thumb, titleText, descText, infoBar]);
 
       // scrollable grid area under the card
-      const cols       = 4;
-      const cardWidth  = 80;
+      const cols = 4;
+      const cardWidth = 80;
       const cardHeight = 90;
-      const hGap       = 10;
-      const vGap       = 10;
+      const hGap = 10;
+      const vGap = 10;
 
       const totalWidth = cols * cardWidth + (cols - 1) * hGap;
       const gridStartX = centerX - totalWidth / 2 + cardWidth / 2;
@@ -343,7 +318,7 @@ export default class CollectionPopup {
         const x = gridStartX + col * (cardWidth + hGap);
         const y = gridStartY + row * (cardHeight + vGap);
 
-        const item   = this.itemsData[i];
+        const item = this.itemsData[i];
         const locked = item.locked;
 
         const cardBg = scene.add.rectangle(
@@ -364,7 +339,7 @@ export default class CollectionPopup {
         this.scrollContainer.add([cardBg, miniThumb, nameText]);
       }
 
-      const totalRows  = Math.ceil(this.itemsData.length / cols);
+      const totalRows = Math.ceil(this.itemsData.length / cols);
       const gridHeight = totalRows * cardHeight + (totalRows - 1) * vGap;
       const visibleGridHeight = this.visibleHeight - 260;
       const maxScroll = Math.max(0, gridHeight - visibleGridHeight);
@@ -378,77 +353,73 @@ export default class CollectionPopup {
 
     // ------------------- STORY TAB -------------------
     for (let i = 0; i < this.itemsData.length; i++) {
-      const y    = startY + i * this.itemHeight;
+      const y = startY + i * this.itemHeight;
       const item = this.itemsData[i];
 
-      // row background to match mock (light vs dark)
-      const rowBgColor   = item.locked ? 0x555555 : 0xf5f5f5;
-      const rowBgAlpha   = item.locked ? 0.8 : 1;
-      const strokeColor  = 0x333333;
+      // background image for each story row
+      const rowBg = scene.add.image(centerX, y, 'collection_bg2')
+        .setOrigin(0.5);
+      rowBg.displayWidth = this.listBgWidth;
+      rowBg.displayHeight = 70;
 
-      const bg = scene.add.rectangle(
-        centerX,
-        y,
-        this.listBgWidth,
-        70,
-        rowBgColor,
-        rowBgAlpha
-      ).setStrokeStyle(0.5, strokeColor);
-
-      const nameText = scene.add.text(centerX - 170, y, item.name, {
+      const nameText = scene.add.text(centerX - this.listBgWidth / 2 + 20, y, item.name, {
         fontSize: '16px',
         color: item.locked ? '#aaaaaa' : '#000000',
         fontFamily: 'Arial'
       }).setOrigin(0, 0.5);
 
-      // 3 pentagon sprites on the right
+      // add bg + text first so they are behind
+      this.scrollContainer.add([rowBg, nameText]);
+
+      // 3 frames + stars on the right
+      const baseX = centerX + 70;
+      const gap = 46;
+
+      let allBlack = true;
+
       for (let j = 0; j < 3; j++) {
-        const iconX = centerX + 80 + j * 46;
+        const iconX = baseX + j * gap;
         const iconY = y;
 
-        let iconKey;
+        // frame under star
+        const frameImg = scene.add.image(iconX, iconY, 'collection_frame')
+          .setOrigin(0.5);
+        frameImg.setDisplaySize(40, 40);
 
-        if (item.locked) {
-          iconKey = 'pentagon_lock';
+        // decide star texture
+        let starKey;
+        if (item.locked || !item.status[j]) {
+          starKey = 'collection_star_black';
         } else {
-          iconKey = item.status[j] ? 'pentagon_on' : 'pentagon_off';
+          starKey = 'collection_star';
+        }
+        if (starKey === 'collection_star') {
+          allBlack = false;
         }
 
-        let icon;
-        if (scene.textures.exists(iconKey)) {
-          icon = scene.add.image(iconX, iconY, iconKey);
-          icon.setDisplaySize(40, 40);
-        } else {
-          // fallback: simple placeholder polygon if texture is missing
-          const g = scene.add.graphics({ x: iconX, y: iconY });
-          g.lineStyle(2, item.locked ? 0x111111 : 0x888888, 1);
-          g.fillStyle(item.locked ? 0x222222 : (item.status[j] ? 0xc2c2c2 : 0xefefef), 1);
+        const starImg = scene.add.image(iconX, iconY, starKey)
+          .setOrigin(0.5);
+        starImg.setDisplaySize(34, 34);
 
-          const size  = 18;
-          const angle = -90 * (Math.PI / 180);
-          const pts   = [];
-          for (let k = 0; k < 5; k++) {
-            const a = angle + (k * 72 * Math.PI / 180);
-            pts.push({
-              x: Math.cos(a) * size,
-              y: Math.sin(a) * size
-            });
-          }
-          g.beginPath();
-          g.moveTo(pts[0].x, pts[0].y);
-          for (let k = 1; k < 5; k++) {
-            g.lineTo(pts[k].x, pts[k].y);
-          }
-          g.closePath();
-          g.fillPath();
-          g.strokePath();
-          icon = g;
-        }
-
-        this.scrollContainer.add(icon);
+          // add AFTER bg so they appear on top
+        this.scrollContainer.add([frameImg, starImg]);
       }
 
-      this.scrollContainer.add([bg, nameText]);
+      // overlay if all 3 are black (unavailable story)
+      if (allBlack) {
+        const overlay = scene.add.rectangle(
+          centerX,
+          y,
+          this.listBgWidth,
+          70,
+          0x000000,
+          0.5
+        );
+         // overlay should be above everything for locked rows
+        this.scrollContainer.add(overlay);
+      }
+
+      //this.scrollContainer.add([rowBg, nameText]);
     }
 
     this.scrollBounds.max = Math.max(0, this.itemsData.length * this.itemHeight - this.visibleHeight);
