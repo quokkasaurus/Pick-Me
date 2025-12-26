@@ -89,19 +89,20 @@ export default class CollectionPopup {
     const popupRight = centerX + this.popupWidth / 2;
     const popupBottom = centerY + this.popupHeight / 2;
 
-    // total stories area (top‑right)
-    const totalBg = scene.add.image(popupRight - 70, popupTop + 40, 'collection_total_bg')
+    // total stories/ item area (top‑right)
+    this.totalBg = scene.add.image(popupRight - 70, popupTop + 40, 'collection_total_bg')
       .setOrigin(0.5)
       .setScale(0.9);
-    // optional scaling if needed:
-    // totalBg.setDisplaySize(110, 36);
 
-    const bookIcon = scene.add.image(totalBg.x - totalBg.displayWidth * 0.35, totalBg.y, 'collection_book_open')
-      .setOrigin(0.5);
+    this.totalIcon = scene.add.image(
+      this.totalBg.x - this.totalBg.displayWidth * 0.35,
+      this.totalBg.y,
+      'collection_book_open'
+    ).setOrigin(0.5);
 
     this.totalText = scene.add.text(
-      totalBg.x + totalBg.displayWidth * 0.02,
-      totalBg.y,
+      this.totalBg.x + this.totalBg.displayWidth * 0.01,
+      this.totalBg.y,
       '4 / 12',
       { fontSize: '16px', color: '#000000', fontFamily: 'Arial' }
     ).setOrigin(0, 0.5);
@@ -207,8 +208,8 @@ export default class CollectionPopup {
     this.popupContainer.add([
       overlay,
       bgImage,
-      totalBg,
-      bookIcon,
+      this.totalBg,
+      this.totalIcon,
       this.totalText,
       this.fixedUIContainer,
       this.scrollContainer,
@@ -226,9 +227,16 @@ export default class CollectionPopup {
     if (this.selectedTab === 'story') {
       storyBtn.setTexture('collection_story_clicked');
       itemBtn.setTexture('collection_item_unclicked');
+
+      if (this.totalIcon) this.totalIcon.setTexture('collection_book_open');
+      if (this.totalText) this.totalText.setText('4 / 12');
+
     } else {
       storyBtn.setTexture('collection_story_unclicked');
       itemBtn.setTexture('collection_item_clicked');
+
+      if (this.totalIcon) this.totalIcon.setTexture('collection_gift');
+      if (this.totalText) this.totalText.setText('20 / NN');
     }
   }
 
@@ -251,54 +259,133 @@ export default class CollectionPopup {
     if (this.selectedTab === 'item') {
       const centerX = scene.cameras.main.centerX;
 
-      // yellow-bordered detail card, placed near top of list area
-      const cardY = this.listMaskArea.y - this.visibleHeight / 2 + 130;
+      // upper half background (collection_bg3)
+      const upperY = this.listMaskArea.y - this.visibleHeight / 2 + 130;
+      const upperBg = scene.add.image(centerX, upperY, 'collection_bg3')
+        .setOrigin(0.5);
+      upperBg.displayWidth = this.listBgWidth;
+      upperBg.displayHeight = 310;
 
-      const detailOuter = scene.add.rectangle(
-        centerX,
-        cardY,
-        this.listBgWidth,
-        220,
-        0xffffff
-      ).setStrokeStyle(2, 0xf4b400);
+      // 1) top board image (collection_item_board)
+      const board = scene.add.image(centerX, upperY - 60, 'collection_item_board')
+        .setOrigin(0.5)
+        .setScale(0.5);
 
-      const thumb = scene.add.rectangle(
-        centerX - 140,
-        cardY - 40,
-        90,
-        90,
-        0xeeeeee
-      );
+      // 2) middle: two small panels (price + first gacha date)
+      const midY = upperY + 5;
+      const gapX = 110;
+      const leftMidX = centerX - gapX;
+      const rightMidX = centerX + gapX;
 
-      const titleText = scene.add.text(centerX - 70, cardY - 70, '이름이름이름', {
-        fontSize: '16px',
-        fontStyle: 'bold',
-        color: '#000000'
-      }).setOrigin(0, 0);
+      // left: price panel
+      const priceBg = scene.add.image(leftMidX, midY + 8, 'collection_item_bg')
+        .setOrigin(0.5)
+        .setScale(0.4);
 
-      const descText = scene.add.text(
-        centerX - 70,
-        cardY - 40,
-        '아이템 설명이 들어가는 영역.\n여러 줄의 텍스트가 표시됩니다.',
-        {
-          fontSize: '12px',
-          color: '#333333',
-          wordWrap: { width: 220 }
-        }
-      ).setOrigin(0, 0);
+      const coinIcon = scene.add.image(priceBg.x - priceBg.displayWidth * 0.35, priceBg.y, 'coin')
+        .setOrigin(0.5)
+        .setScale(0.2);
 
-      const infoBarY = cardY + 40;
-      const infoBar = scene.add.rectangle(
-        centerX,
-        infoBarY,
-        this.listBgWidth - 10,
-        26,
-        0xffffff
-      ).setStrokeStyle(1, 0xf4b400);
+      const priceLabel = scene.add.text(
+        coinIcon.x + 20,
+        priceBg.y,
+        '판매 가격',
+        { fontSize: '14px', fontFamily: 'DoveMayo', color: '#000000' }
+      ).setOrigin(0, 0.5);
 
-      this.fixedUIContainer.add([detailOuter, thumb, titleText, descText, infoBar]);
+      const priceText = scene.add.text(
+        priceBg.x + priceBg.displayWidth * 0.3,
+        priceBg.y,
+        '99999999',
+        { fontSize: '14px', fontFamily: 'DoveMayo', color: '#000000' }
+      ).setOrigin(0.5, 0.5); // right aligned
 
-      // scrollable grid area under the card
+      // right: first gacha date panel
+      const dateBg = scene.add.image(rightMidX, midY + 8, 'collection_item_bg')
+        .setOrigin(0.5)
+        .setScale(0.4);
+
+      const capsuleIcon = scene.add.image(dateBg.x - dateBg.displayWidth * 0.35, dateBg.y, 'collection_capsule')
+        .setOrigin(0.5)
+        .setScale(0.5);
+
+      const dateLabel = scene.add.text(
+        capsuleIcon.x + 20,
+        dateBg.y,
+        '최초 가챠일',
+        { fontSize: '14px', fontFamily: 'DoveMayo', color: '#000000' }
+      ).setOrigin(0, 0.5);
+
+      const dateText = scene.add.text(
+        dateBg.x + dateBg.displayWidth * 0.3,
+        dateBg.y,
+        '9999.99.99',
+        { fontSize: '14px', fontFamily: 'DoveMayo', color: '#000000' }
+      ).setOrigin(0.5, 0.5);
+
+      // 3) bottom of upper section: combine items row
+      const bottomY = upperY + 90;
+
+      const comboBg = scene.add.image(centerX, bottomY, 'collection_item_bg2')
+        .setOrigin(0.5)
+        .setScale(0.66);
+
+      const uniteIcon = scene.add.image(
+        comboBg.x - comboBg.displayWidth * 0.38,
+        comboBg.y,
+        'collection_item_unite'
+      ).setOrigin(0.5)
+       .setScale(0.5);
+
+      const uniteText = scene.add.text(
+        uniteIcon.x,
+        comboBg.y,
+        '합체 가능한 아이템',
+        { fontSize: '14px', fontFamily: 'DoveMayo', color: '#000000' }
+      ).setOrigin(0.5)
+      .setScale(0.6);
+
+      const possibleBg = scene.add.image(
+        comboBg.x + comboBg.displayWidth * 0.12,
+        comboBg.y,
+        'collection_item_bg3'
+      ).setOrigin(0.5)
+      .setScale(1.25);
+
+      const possibleIcon = scene.add.image(possibleBg.x - 4, possibleBg.y, 'collection_possible_item')
+        .setOrigin(0.5)
+        .setScale(0.6);
+
+      // add all upper objects to fixed UI (they don't scroll)
+      this.fixedUIContainer.add([
+        upperBg,
+        board,
+        priceBg,
+        coinIcon,
+        priceLabel,
+        priceText,
+        dateBg,
+        capsuleIcon,
+        dateLabel,
+        dateText,
+        comboBg,
+        uniteIcon,
+        uniteText,
+        possibleBg,
+        possibleIcon
+      ]);
+
+      // ---------- lower scroll grid ----------
+      const outlineY = this.listMaskArea.y + this.visibleHeight / 2 - 120;
+
+      const outline = scene.add.image(centerX, outlineY, 'collection_item_outline')
+        .setOrigin(0.5);
+      outline.displayWidth = this.listBgWidth;
+      outline.displayHeight = this.visibleHeight - 260;
+
+      this.scrollContainer.add(outline);
+
+      // simple 4xN grid of collection_items inside outline
       const cols = 4;
       const cardWidth = 80;
       const cardHeight = 90;
@@ -307,9 +394,7 @@ export default class CollectionPopup {
 
       const totalWidth = cols * cardWidth + (cols - 1) * hGap;
       const gridStartX = centerX - totalWidth / 2 + cardWidth / 2;
-      const gridStartY = this.listMaskArea.y - this.visibleHeight / 2 + 260;
-
-
+      const gridStartY = outlineY - outline.displayHeight / 2 + cardHeight / 2 + 10;
 
       for (let i = 0; i < this.itemsData.length; i++) {
         const row = Math.floor(i / cols);
@@ -318,31 +403,17 @@ export default class CollectionPopup {
         const x = gridStartX + col * (cardWidth + hGap);
         const y = gridStartY + row * (cardHeight + vGap);
 
-        const item = this.itemsData[i];
-        const locked = item.locked;
+        const cardBg = scene.add.image(x, y, 'collection_gacha')
+          .setOrigin(0.5)
+          .setDisplaySize(cardWidth, cardHeight);
 
-        const cardBg = scene.add.rectangle(
-          x, y, cardWidth, cardHeight,
-          locked ? 0x555555 : 0xffffff,
-          locked ? 0.8 : 1
-        ).setStrokeStyle(0.5, 0x333333);
-
-        const miniThumb = scene.add.rectangle(x, y - 8, 50, 40, 0xeeeeee);
-
-        const nameText = scene.add.text(x, y + 22, item.name, {
-          fontSize: '10px',
-          color: locked ? '#777777' : '#000000',
-          wordWrap: { width: cardWidth - 8 },
-          align: 'center'
-        }).setOrigin(0.5);
-
-        this.scrollContainer.add([cardBg, miniThumb, nameText]);
+        this.scrollContainer.add(cardBg);
       }
 
       const totalRows = Math.ceil(this.itemsData.length / cols);
       const gridHeight = totalRows * cardHeight + (totalRows - 1) * vGap;
-      const visibleGridHeight = this.visibleHeight - 260;
-      const maxScroll = Math.max(0, gridHeight - visibleGridHeight);
+      const visibleGridArea = outline.displayHeight - 20;
+      const maxScroll = Math.max(0, gridHeight - visibleGridArea);
 
       this.scrollBounds.max = maxScroll;
       this.scrollBounds.min = 0;
