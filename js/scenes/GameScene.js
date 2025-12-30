@@ -4,6 +4,7 @@ import BottomNavBar from '/ui/BottomNavBar.js';
 import Lever from '/ui/Lever.js';
 import StorePopup from '/ui/StorePopup.js';
 import CollectionPopup from '/ui/CollectionPopup.js';
+import ThemePopup from '/ui/ThemePopup.js';
 import CategoryButton from '/ui/CategoryButton.js';
 import CategoryButtonGroup from '/ui/CategoryButtonGroup.js';
 import CoinBar from '/ui/CoinBar.js';
@@ -142,8 +143,14 @@ export default class GameScene extends Phaser.Scene {
     this.load.image('collection_item_unite', 'assets/collection_item_unite.png');
     this.load.image('collection_possible_item', 'assets/collection_possible_item.png');
     this.load.image('collection_items', 'assets/collection_items.png');
-    
     // Other images can be add here too
+    // ThemePopup
+    this.load.image('theme_rect', 'assets/theme_rect.png');
+    this.load.image('theme_rect_btn', 'assets/theme_rect_btn.png');
+    this.load.image('theme_hidden', 'assets/theme_hidden.png');
+    this.load.image('theme_selected', 'assets/theme_selected.png');
+    this.load.image('theme_basic', 'assets/theme_basic.png');
+    this.load.image('theme_summer', 'assets/theme_summer.png');
   }
 
   create() {
@@ -167,7 +174,8 @@ export default class GameScene extends Phaser.Scene {
     this.createProgressBar();
     this.Lever.setProgressBarUpdateCallback(this.updateProgressBarUI.bind(this));
     this.playerState = { coins: 999999, bagSlots: 20, clickLevel: 1 };
-    this.storePopup = new StorePopup(this, this.playerState)
+    this.storePopup = new StorePopup(this, this.playerState);
+    this.themePopup = new ThemePopup(this);
   }
 
   createProgressBar() {
@@ -200,6 +208,7 @@ export default class GameScene extends Phaser.Scene {
 
     if (this.collectionPopup) this.collectionPopup.hidePopup();
     if (this.storePopup) this.storePopup.hide();
+    if (this.themePopup) this.themePopup.hide();
 
     switch (label) {
       case '도감':
@@ -210,9 +219,11 @@ export default class GameScene extends Phaser.Scene {
         if (this.storePopup) this.storePopup.show();
         break;
 
-      // other buttons (optional for now)
       case '가방':
+        break;
+
       case '장식장':
+        if (this.themePopup) this.themePopup.show();
         break;
     }
   }
