@@ -162,6 +162,10 @@ export default class GameScene extends Phaser.Scene {
     this.load.image('bag_item_sell', 'assets/bag_item_sell.png');
     this.load.image('bag_show_sell', 'assets/bag_show_sell.png');
     this.load.image('item_rank_a', 'assets/item_rank_a.png');
+    this.load.image('bag_confirm_sell', 'assets/bag_confirm_sell.png');
+    this.load.image('bag_getcoin', 'assets/bag_getcoin.png');
+    this.load.image('bag_choose_sell', 'assets/bag_choose_sell.png');
+    this.load.image('bag_choose_cancel', 'assets/bag_choose_cancel.png');
   }
 
   create() {
