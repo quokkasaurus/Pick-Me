@@ -26,7 +26,6 @@ export default class BagPopup {
         this.dragStartContainerY = 0;
 
         this.wheelHandler = null;
-
         this.isOpen = false;
 
         this.sortMode = 'order';
@@ -35,6 +34,12 @@ export default class BagPopup {
         this.starBtn = null;
 
         this.subPopupContainer = null;
+        this.confirmSellContainer = null;
+        this.getCoinContainer = null;
+
+        this.cancelChooseBtn = null;
+        this.chooseSellBtn = null;
+        this.isChooseSellActive = false;
     }
 
     createPopup() {
@@ -60,6 +65,39 @@ export default class BagPopup {
         const bg = scene.add.image(centerX, centerY, 'popup_bg1')
             .setDisplaySize(this.popupWidth, this.popupHeight);
 
+        // CHOOSE SELL BUTTON
+        this.chooseSellBtn = scene.add.image(
+            centerX - this.popupWidth / 2 + 380,
+            centerY + this.popupHeight / 2 - 40,
+            'bag_choose_sell'
+        )
+            .setScale(1.25)
+            .setInteractive({ useHandCursor: true });
+
+        this.chooseSellBtn.on('pointerdown', () => {
+            if (!this.isChooseSellActive) {
+                this.isChooseSellActive = true;
+                this.cancelChooseBtn.setVisible(true);
+                this.container.bringToTop(this.cancelChooseBtn);
+            }
+        });
+
+        // CANCEL CHOOSE BUTTON (HIDDEN INITIALLY)
+        this.cancelChooseBtn = scene.add.image(
+            centerX - this.popupWidth / 2 + 235,
+            centerY + this.popupHeight / 2 - 40,
+            'bag_choose_cancel'
+        )
+            .setScale(1.25)
+            .setInteractive({ useHandCursor: true });
+
+        this.cancelChooseBtn.setVisible(false);
+
+        this.cancelChooseBtn.on('pointerdown', () => {
+            this.isChooseSellActive = false;
+            this.cancelChooseBtn.setVisible(false);
+        });
+
         const exitBtn = scene.add.image(
             centerX - this.popupWidth / 2 + 32,
             centerY + this.popupHeight / 2 - 32,
@@ -78,13 +116,8 @@ export default class BagPopup {
             .setInteractive({ useHandCursor: true });
 
         this.sortBtn.on('pointerdown', () => {
-            if (this.sortMode === 'order') {
-                this.sortMode = 'rank';
-                this.sortBtn.setTexture('bag_rank');
-            } else {
-                this.sortMode = 'order';
-                this.sortBtn.setTexture('bag_order');
-            }
+            this.sortMode = this.sortMode === 'order' ? 'rank' : 'order';
+            this.sortBtn.setTexture(this.sortMode === 'order' ? 'bag_order' : 'bag_rank');
         });
 
         const rightBaseX = centerX + this.popupWidth / 2 - 120;
@@ -99,6 +132,8 @@ export default class BagPopup {
 
         this.createScrollableGrid(centerX, centerY);
         this.createSubPopup(centerX, centerY);
+        this.createConfirmSellPopup(centerX, centerY);
+        this.createGetCoinPopup(centerX, centerY);
 
         this.container.add([
             overlay,
@@ -108,10 +143,15 @@ export default class BagPopup {
             this.favBtn,
             this.starBtn,
             exitBtn,
-            this.subPopupContainer
+            this.cancelChooseBtn,
+            this.chooseSellBtn,
+            this.subPopupContainer,
+            this.confirmSellContainer,
+            this.getCoinContainer
         ]);
     }
 
+    // ---------- SUB POPUP ----------
     createSubPopup(centerX, centerY) {
         const scene = this.scene;
 
@@ -133,7 +173,6 @@ export default class BagPopup {
             'item_rank_a'
         );
 
-
         const exitBtn = scene.add.image(
             img.x - img.displayWidth / 2 + 30,
             img.y + img.displayHeight / 2 - 30,
@@ -153,17 +192,76 @@ export default class BagPopup {
         ).setScale(2.2).setInteractive({ useHandCursor: true });
 
         sellBtn.on('pointerdown', () => {
-            // TODO: sell logic
+            this.subPopupContainer.setVisible(false);
+            this.confirmSellContainer.setVisible(true);
         });
 
         this.subPopupContainer.add([img, showSell, rankLabel, exitBtn, sellBtn]);
     }
 
-    showSubPopup() {
-        if (!this.subPopupContainer) return;
-        this.subPopupContainer.setVisible(true);
+    createConfirmSellPopup(centerX, centerY) {
+        const scene = this.scene;
+
+        this.confirmSellContainer = scene.add.container(0, 0);
+        this.confirmSellContainer.setVisible(false);
+        this.confirmSellContainer.setDepth(4000);
+
+        const bg = scene.add.image(centerX, centerY, 'bag_confirm_sell').setScale(1.8);
+
+        const closeBtn = scene.add.image(
+            bg.x - bg.displayWidth / 2 + 30,
+            bg.y + bg.displayHeight / 2 - 30,
+            'exit_button'
+        )
+            .setDisplaySize(48, 48)
+            .setInteractive({ useHandCursor: true });
+
+        closeBtn.on('pointerdown', () => {
+            this.confirmSellContainer.setVisible(false);
+            this.subPopupContainer.setVisible(false);
+        });
+
+        const okBtn = scene.add.image(
+            bg.x + bg.displayWidth / 2 - 30,
+            bg.y + bg.displayHeight / 2 - 30,
+            'yes_button'
+        )
+            .setScale(2.0)
+            .setInteractive({ useHandCursor: true });
+
+        okBtn.on('pointerdown', () => {
+            this.confirmSellContainer.setVisible(false);
+            this.getCoinContainer.setVisible(true);
+        });
+
+        this.confirmSellContainer.add([bg, closeBtn, okBtn]);
     }
 
+    createGetCoinPopup(centerX, centerY) {
+        const scene = this.scene;
+
+        this.getCoinContainer = scene.add.container(0, 0);
+        this.getCoinContainer.setVisible(false);
+        this.getCoinContainer.setDepth(5000);
+
+        const bg = scene.add.image(centerX, centerY, 'bag_getcoin').setScale(1.8);
+
+        const okBtn = scene.add.image(
+            bg.x + bg.displayWidth / 2 - 30,
+            bg.y + bg.displayHeight / 2 - 30,
+            'yes_button'
+        )
+            .setScale(2.0)
+            .setInteractive({ useHandCursor: true });
+
+        okBtn.on('pointerdown', () => {
+            this.getCoinContainer.setVisible(false);
+        });
+
+        this.getCoinContainer.add([bg, okBtn]);
+    }
+
+    // ---------- GRID / SCROLL ----------
     createScrollableGrid(centerX, centerY) {
         const scene = this.scene;
 
@@ -201,7 +299,6 @@ export default class BagPopup {
         ).setInteractive();
 
         this.container.add(this.scrollMaskGraphics);
-
         this.scrollContainer.add(this.scrollHit);
         this.scrollContainer.add(this.itemsContainer);
 
@@ -224,13 +321,11 @@ export default class BagPopup {
                 const y = startY + row * (itemH + itemGap);
 
                 let textureKey = 'collection_gacha';
-
                 if (row === 0 && (col === 1 || col === 2)) {
                     textureKey = 'bag_item_unite';
                 }
 
-                const item = scene.add.image(x, y, textureKey)
-                    .setScale(itemScale);
+                const item = scene.add.image(x, y, textureKey).setScale(itemScale);
 
                 if (row === 0 && col === 0) {
                     item.setInteractive({ useHandCursor: true });
@@ -242,26 +337,18 @@ export default class BagPopup {
         }
 
         const hiddenRowY = startY + rows * (itemH + itemGap);
-
         for (let col = 0; col < cols; col++) {
             const x = startX + col * (itemW + itemGap);
-            const item = scene.add.image(x, hiddenRowY, 'collection_hidden')
-                .setScale(itemScale);
-
-            this.itemsContainer.add(item);
+            this.itemsContainer.add(
+                scene.add.image(x, hiddenRowY, 'collection_hidden').setScale(itemScale)
+            );
         }
 
-        const totalRows = rows + 1;
-
-        const contentHeight =
-            totalRows * (itemH + itemGap) - itemGap;
-
+        const contentHeight = (rows + 1) * (itemH + itemGap) - itemGap;
         const maxScroll = Math.max(0, contentHeight - viewportHeight);
 
-        this.scrollTopY = 0;
         this.scrollMaxY = 0;
         this.scrollMinY = -maxScroll;
-
         this.setScrollY(0);
 
         this.scrollHit.on('pointerdown', (pointer) => {
@@ -276,35 +363,32 @@ export default class BagPopup {
 
         scene.input.on('pointermove', (pointer) => {
             if (!this.isDragging || !this.isOpen) return;
-            const dy = pointer.y - this.dragStartY;
-            this.setScrollY(this.dragStartContainerY + dy);
+            this.setScrollY(this.dragStartContainerY + (pointer.y - this.dragStartY));
         });
 
         if (!this.wheelHandler) {
             this.wheelHandler = (pointer, gameObjects, dx, dy) => {
                 if (!this.isOpen) return;
-
-                const inViewport =
-                    pointer.x >= viewportLeft &&
-                    pointer.x <= viewportLeft + viewportWidth &&
-                    pointer.y >= viewportTop &&
-                    pointer.y <= viewportTop + viewportHeight;
-
-                if (!inViewport) return;
+                if (
+                    pointer.x < viewportLeft ||
+                    pointer.x > viewportLeft + viewportWidth ||
+                    pointer.y < viewportTop ||
+                    pointer.y > viewportTop + viewportHeight
+                ) return;
 
                 this.setScrollY(this.itemsContainer.y - dy * 0.5);
             };
-
             scene.input.on('wheel', this.wheelHandler);
         }
     }
 
     setScrollY(y) {
-        this.itemsContainer.y = Phaser.Math.Clamp(
-            y,
-            this.scrollMinY,
-            this.scrollMaxY
-        );
+        this.itemsContainer.y = Phaser.Math.Clamp(y, this.scrollMinY, this.scrollMaxY);
+    }
+
+    showSubPopup() {
+        if (!this.subPopupContainer) return;
+        this.subPopupContainer.setVisible(true);
     }
 
     show() {
@@ -318,7 +402,12 @@ export default class BagPopup {
         this.container.setVisible(false);
         this.isOpen = false;
         this.isDragging = false;
+        this.isChooseSellActive = false;
+
+        if (this.cancelChooseBtn) this.cancelChooseBtn.setVisible(false);
         if (this.subPopupContainer) this.subPopupContainer.setVisible(false);
+        if (this.confirmSellContainer) this.confirmSellContainer.setVisible(false);
+        if (this.getCoinContainer) this.getCoinContainer.setVisible(false);
     }
 
     destroy() {
@@ -336,6 +425,10 @@ export default class BagPopup {
             this.scrollMask = null;
             this.scrollHit = null;
             this.subPopupContainer = null;
+            this.confirmSellContainer = null;
+            this.getCoinContainer = null;
+            this.chooseSellBtn = null;
+            this.cancelChooseBtn = null;
         }
     }
 }
