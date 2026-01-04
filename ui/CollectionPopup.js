@@ -25,17 +25,11 @@ export default class CollectionPopup {
     this.listBgWidth = 400;
     this.popupWidth = 500;
     this.popupHeight = 700;
-  }
 
-  // IMPORTANT:
-  // Make sure your Scene.preload has something like:
-  //
-  // this.load.image('pentagon_on',    'assets/pentagon_on.png');
-  // this.load.image('pentagon_off',   'assets/pentagon_off.png');
-  // this.load.image('pentagon_lock',  'assets/pentagon_lock.png');
-  // this.load.image('chat_icon',      'assets/chat_icon.png'); // optional
-  //
-  // You can change the keys below if your art uses different names.
+    // new: separate masks
+    this.storyMask = null;
+    this.gridMask = null;
+  }
 
   generateTestData() {
     const base = [
@@ -52,7 +46,6 @@ export default class CollectionPopup {
       { name: '이름이름이름이름', status: [true, true, false, false], locked: false },
       { name: '이름이름이름이름', status: [true, false, false, false], locked: false }
     ];
-    // plenty of items to scroll through
     return base.concat(base).concat(base);
   }
 
@@ -61,7 +54,6 @@ export default class CollectionPopup {
     const centerX = scene.cameras.main.centerX;
     const centerY = scene.cameras.main.centerY;
 
-    // createPopup
     this.fixedUIContainer = scene.add.container(0, 0);
     this.scrollContainer = scene.add.container(0, 0);
 
@@ -69,7 +61,6 @@ export default class CollectionPopup {
     this.popupContainer.setVisible(false);
     this.popupContainer.setDepth(999);
 
-    // Background overlay (dim)
     const overlay = scene.add.rectangle(
       centerX,
       centerY,
@@ -79,17 +70,14 @@ export default class CollectionPopup {
       0.5
     ).setInteractive();
 
-    // background image instead of grey box
     const bgImage = scene.add.image(centerX, centerY, 'collection_bg');
     bgImage.setDisplaySize(this.popupWidth, this.popupHeight);
-
 
     const popupLeft = centerX - this.popupWidth / 2;
     const popupTop = centerY - this.popupHeight / 2;
     const popupRight = centerX + this.popupWidth / 2;
     const popupBottom = centerY + this.popupHeight / 2;
 
-    // total stories/ item area (top‑right)
     this.totalBg = scene.add.image(popupRight - 70, popupTop + 40, 'collection_total_bg')
       .setOrigin(0.5)
       .setScale(0.9);
@@ -107,9 +95,7 @@ export default class CollectionPopup {
       { fontSize: '16px', color: '#000000', fontFamily: 'Arial' }
     ).setOrigin(0, 0.5);
 
-
-
-    // Tabs (스토리 / 아이템)
+    // Tabs
     const tabY = popupTop + 40;
     const storyTabX = popupLeft + 100;
     const itemTabX = popupLeft + 220;
@@ -138,7 +124,7 @@ export default class CollectionPopup {
       makeTab('item', itemTabX, 'collection_item_clicked', 'collection_item_unclicked')
     ];
 
-    // Scrollable grey list area (below tabs)
+    // story list mask (tall)
     const maskTopY = tabY + (this.tabHeight / 2) + this.extraTopSpace;
 
     this.listMaskArea = scene.add.rectangle(
@@ -147,31 +133,30 @@ export default class CollectionPopup {
       this.listWidth,
       this.visibleHeight,
       0xffffff,
-      0 // invisible, just helper
+      0
     );
     this.listMaskArea.setVisible(false);
 
-    // Mask only for scrollContainer
-    const maskGfx = scene.make.graphics({});
-    maskGfx.fillStyle(0xffffff);
-    maskGfx.fillRect(centerX - this.listWidth / 2, maskTopY, this.listWidth, this.visibleHeight);
-    const mask = maskGfx.createGeometryMask();
-    this.scrollContainer.setMask(mask);
+    const storyMaskGfx = scene.make.graphics({});
+    storyMaskGfx.fillStyle(0xffffff);
+    storyMaskGfx.fillRect(centerX - this.listWidth / 2, maskTopY, this.listWidth, this.visibleHeight);
+    this.storyMask = storyMaskGfx.createGeometryMask();
 
-    // Scroll bounds
+    // apply default (story) mask
+    this.scrollContainer.setMask(this.storyMask);
+
+    // scroll bounds
     this.itemsStartY = maskTopY + this.itemHeight / 2;
     this.scrollBounds = { min: 0, max: 0 };
     this.scrollY = 0;
 
-    // Mouse wheel scrolling
     scene.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
       if (!this.popupContainer.visible) return;
       this.scrollY += deltaY * 0.5;
       this.updateScroll();
     });
 
-
-    // --- Bottom-left exit button ---
+    // exit button
     let exitButton;
     if (scene.textures.exists('exit_button')) {
       exitButton = scene.add.image(popupLeft + 32, popupBottom - 32, 'exit_button')
@@ -241,43 +226,46 @@ export default class CollectionPopup {
   }
 
   refreshList() {
-    this.scrollContainer.removeAll(true);
-
-    // remove ONLY detail card elements, keep tabs
-    this.fixedUIContainer.list
-      .filter(obj => obj.__isDetailCard)
-      .forEach(obj => {
-        this.fixedUIContainer.remove(obj, true);
-      });
-
-
     const scene = this.scene;
     const centerX = scene.cameras.main.centerX;
     const startY = this.itemsStartY;
 
+    // Clear previous tab content
+    this.scrollContainer.removeAll(true);
+
+    // remove detail cards
+    this.fixedUIContainer.list
+      .filter(obj => obj.__isDetailCard)
+      .forEach(obj => this.fixedUIContainer.remove(obj, true));
+
+    // NEW: remove item tab upper UI
+    this.fixedUIContainer.list
+      .filter(obj => obj.__isItemUI)
+      .forEach(obj => this.fixedUIContainer.remove(obj, true));
+
+    // restore story mask by default
+    if (this.selectedTab === 'story' && this.storyMask) {
+      this.scrollContainer.setMask(this.storyMask);
+    }
+
     // ------------------- ITEM TAB -------------------
     if (this.selectedTab === 'item') {
-      const centerX = scene.cameras.main.centerX;
-
-      // upper half background (collection_bg3)
+      // upper half background
       const upperY = this.listMaskArea.y - this.visibleHeight / 2 + 130;
       const upperBg = scene.add.image(centerX, upperY, 'collection_bg3')
         .setOrigin(0.5);
       upperBg.displayWidth = this.listBgWidth;
       upperBg.displayHeight = 310;
 
-      // 1) top board image (collection_item_board)
       const board = scene.add.image(centerX, upperY - 60, 'collection_item_board')
         .setOrigin(0.5)
         .setScale(0.5);
 
-      // 2) middle: two small panels (price + first gacha date)
       const midY = upperY + 5;
       const gapX = 110;
       const leftMidX = centerX - gapX;
       const rightMidX = centerX + gapX;
 
-      // left: price panel
       const priceBg = scene.add.image(leftMidX, midY + 8, 'collection_item_bg')
         .setOrigin(0.5)
         .setScale(0.4);
@@ -298,9 +286,8 @@ export default class CollectionPopup {
         priceBg.y,
         '99999999',
         { fontSize: '14px', fontFamily: 'DoveMayo', color: '#000000' }
-      ).setOrigin(0.5, 0.5); // right aligned
+      ).setOrigin(0.5, 0.5);
 
-      // right: first gacha date panel
       const dateBg = scene.add.image(rightMidX, midY + 8, 'collection_item_bg')
         .setOrigin(0.5)
         .setScale(0.4);
@@ -323,7 +310,6 @@ export default class CollectionPopup {
         { fontSize: '14px', fontFamily: 'DoveMayo', color: '#000000' }
       ).setOrigin(0.5, 0.5);
 
-      // 3) bottom of upper section: combine items row
       const bottomY = upperY + 90;
 
       const comboBg = scene.add.image(centerX, bottomY, 'collection_item_bg2')
@@ -335,7 +321,7 @@ export default class CollectionPopup {
         comboBg.y,
         'collection_item_unite'
       ).setOrigin(0.5)
-       .setScale(0.5);
+        .setScale(0.5);
 
       const uniteText = scene.add.text(
         uniteIcon.x,
@@ -343,20 +329,19 @@ export default class CollectionPopup {
         '합체 가능한 아이템',
         { fontSize: '14px', fontFamily: 'DoveMayo', color: '#000000' }
       ).setOrigin(0.5)
-      .setScale(0.6);
+        .setScale(0.6);
 
       const possibleBg = scene.add.image(
         comboBg.x + comboBg.displayWidth * 0.12,
         comboBg.y,
         'collection_item_bg3'
       ).setOrigin(0.5)
-      .setScale(1.25);
+        .setScale(1.25);
 
       const possibleIcon = scene.add.image(possibleBg.x - 4, possibleBg.y, 'collection_possible_item')
         .setOrigin(0.5)
         .setScale(0.6);
 
-      // add all upper objects to fixed UI (they don't scroll)
       this.fixedUIContainer.add([
         upperBg,
         board,
@@ -373,19 +358,33 @@ export default class CollectionPopup {
         uniteText,
         possibleBg,
         possibleIcon
-      ]);
+      ].map(obj => {
+        obj.__isItemUI = true;  // tag for cleanup
+        return obj;
+      }));
 
       // ---------- lower scroll grid ----------
-      const outlineY = this.listMaskArea.y + this.visibleHeight / 2 - 120;
+      const outlineY = this.listMaskArea.y + this.visibleHeight / 2 - 130;
 
-      const outline = scene.add.image(centerX, outlineY, 'collection_item_outline')
-        .setOrigin(0.5);
-      outline.displayWidth = this.listBgWidth;
-      outline.displayHeight = this.visibleHeight - 260;
+      // outline sprite removed so nothing scrolls behind the cards
+      // we just use its position/size as a logical area
+      const outlineHeight = this.visibleHeight - 300;
 
-      this.scrollContainer.add(outline);
+      // grid mask just for bottom area
+      const gridMaskTop = outlineY - outlineHeight / 2;
+      const gridMaskHeight = outlineHeight;
 
-      // simple 4xN grid of collection_items inside outline
+      const gridMaskGfx = scene.make.graphics({});
+      gridMaskGfx.fillStyle(0xffffff);
+      gridMaskGfx.fillRect(
+        centerX - this.listBgWidth / 2,
+        gridMaskTop,
+        this.listBgWidth,
+        gridMaskHeight
+      );
+      this.gridMask = gridMaskGfx.createGeometryMask();
+      this.scrollContainer.setMask(this.gridMask);
+
       const cols = 4;
       const cardWidth = 80;
       const cardHeight = 90;
@@ -394,7 +393,9 @@ export default class CollectionPopup {
 
       const totalWidth = cols * cardWidth + (cols - 1) * hGap;
       const gridStartX = centerX - totalWidth / 2 + cardWidth / 2;
-      const gridStartY = outlineY - outline.displayHeight / 2 + cardHeight / 2 + 10;
+      const gridStartY = outlineY - outlineHeight / 2 + cardHeight / 2 + 10;
+
+      const visibleGridArea = outlineHeight - 20;
 
       for (let i = 0; i < this.itemsData.length; i++) {
         const row = Math.floor(i / cols);
@@ -412,7 +413,6 @@ export default class CollectionPopup {
 
       const totalRows = Math.ceil(this.itemsData.length / cols);
       const gridHeight = totalRows * cardHeight + (totalRows - 1) * vGap;
-      const visibleGridArea = outline.displayHeight - 20;
       const maxScroll = Math.max(0, gridHeight - visibleGridArea);
 
       this.scrollBounds.max = maxScroll;
@@ -427,7 +427,6 @@ export default class CollectionPopup {
       const y = startY + i * this.itemHeight;
       const item = this.itemsData[i];
 
-      // background image for each story row
       const rowBg = scene.add.image(centerX, y, 'collection_bg2')
         .setOrigin(0.5);
       rowBg.displayWidth = this.listBgWidth;
@@ -439,10 +438,8 @@ export default class CollectionPopup {
         fontFamily: 'Arial'
       }).setOrigin(0, 0.5);
 
-      // add bg + text first so they are behind
       this.scrollContainer.add([rowBg, nameText]);
 
-      // 3 frames + stars on the right
       const baseX = centerX + 70;
       const gap = 46;
 
@@ -452,12 +449,10 @@ export default class CollectionPopup {
         const iconX = baseX + j * gap;
         const iconY = y;
 
-        // frame under star
         const frameImg = scene.add.image(iconX, iconY, 'collection_frame')
           .setOrigin(0.5);
         frameImg.setDisplaySize(40, 40);
 
-        // decide star texture
         let starKey;
         if (item.locked || !item.status[j]) {
           starKey = 'collection_star_black';
@@ -472,11 +467,9 @@ export default class CollectionPopup {
           .setOrigin(0.5);
         starImg.setDisplaySize(34, 34);
 
-        // add AFTER bg so they appear on top
         this.scrollContainer.add([frameImg, starImg]);
       }
 
-      // overlay if all 3 are black (unavailable story)
       if (allBlack) {
         const overlay = scene.add.rectangle(
           centerX,
@@ -486,17 +479,14 @@ export default class CollectionPopup {
           0x000000,
           0.5
         );
-        // overlay should be above everything for locked rows
         this.scrollContainer.add(overlay);
       }
 
       const hasThreeFullStars = item.status[0] && item.status[1] && item.status[2] && !item.locked;
 
-      // existing bg + text:
       this.scrollContainer.add([rowBg, nameText]);
 
       if (hasThreeFullStars) {
-        // make the whole row clickable
         rowBg.setInteractive({ useHandCursor: true });
         nameText.setInteractive({ useHandCursor: true });
 
@@ -531,19 +521,17 @@ export default class CollectionPopup {
       this.popupContainer.setVisible(false);
     }
   }
-  // item: a story object from this.itemsData
+
   showStoryDetail(item) {
     const scene = this.scene;
     const centerX = scene.cameras.main.centerX;
     const centerY = scene.cameras.main.centerY;
 
-    // simple container so we can destroy everything at once
     if (this.detailContainer) {
       this.detailContainer.destroy();
     }
     this.detailContainer = scene.add.container(0, 0).setDepth(1000);
 
-    // dim background
     const overlay = scene.add.rectangle(
       centerX,
       centerY,
@@ -553,7 +541,6 @@ export default class CollectionPopup {
       0.5
     ).setInteractive();
 
-    // main bg (collection_bg3)
     const bg = scene.add.image(centerX, centerY, 'collection_bg3')
       .setOrigin(0.5);
     bg.displayWidth = 500;
@@ -563,14 +550,13 @@ export default class CollectionPopup {
     const popupTop = centerY - bg.displayHeight / 2;
     const popupBottom = centerY + bg.displayHeight / 2;
 
-    // title background + text
     const titleBg = scene.add.image(centerX, popupTop + 55, 'collection_title_bg')
       .setOrigin(0.5);
 
     const titleText = scene.add.text(
       centerX,
       titleBg.y,
-      item.name, // "토토의 기다림"
+      item.name,
       {
         fontSize: '22px',
         color: '#000000',
@@ -578,7 +564,6 @@ export default class CollectionPopup {
       }
     ).setOrigin(0.5);
 
-    // story body bg (collection_bg2)
     const storyBg = scene.add.image(centerX, centerY, 'collection_bg2')
       .setOrigin(0.5);
     storyBg.displayWidth = 460;
@@ -605,7 +590,6 @@ export default class CollectionPopup {
       }
     ).setOrigin(0, 0);
 
-    // 3 gacha cards along bottom
     const gachaY = popupBottom - 60;
     const spacing = 140;
     const startX = centerX - spacing;
@@ -618,7 +602,6 @@ export default class CollectionPopup {
       gachaCards.push(card);
     }
 
-    // close button (reuse exit_button style)
     const closeBtn = scene.add.image(popupLeft + 32, popupBottom - 32, 'exit_button')
       .setOrigin(0.5)
       .setDisplaySize(48, 48)
