@@ -3,6 +3,8 @@ import TopButtonBar from '/ui/TopButtonBar.js';
 import CollectionPopup from '/ui/CollectionPopup.js';
 import StorePopup from '/ui/StorePopup.js';
 import BottomNavBar from '/ui/BottomNavBar.js';
+import ThemePopup from '/ui/ThemePopup.js';
+import BagPopup from '/ui/BagPopup.js';
 
 export default class InventoryScene extends Phaser.Scene {
   constructor() {
@@ -11,10 +13,10 @@ export default class InventoryScene extends Phaser.Scene {
 
   preload() {
     // Load sample item images (you can adjust these)
-    this.load.image('Char_Cake', 'assets/Char_Cake.png');
+    this.load.image('Char_Cake', 'assets/char_pancake.png');
     this.load.image('Char_Snow', 'assets/Char_Snow.png');
-    this.load.image('Char_Pen', 'assets/Char_Pen.png');
-    this.load.image('Char_Happy', 'assets/Char_Happy.png');
+    this.load.image('Char_Cat', 'assets/char_blackCat.png');
+    this.load.image('Char_Happy', 'assets/char_happyStar.png');
   }
 
   create() {
@@ -22,7 +24,7 @@ export default class InventoryScene extends Phaser.Scene {
 
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
-    const offsetY = -100;
+    const offsetY = 0;
 
     // === UI Components ===
     const startX = centerX - 240;
@@ -32,6 +34,8 @@ export default class InventoryScene extends Phaser.Scene {
     this.collectionPopup = new CollectionPopup(this);
     this.collectionPopup.createPopup();
     this.storePopup = new StorePopup(this);
+    this.themePopup = new ThemePopup(this);
+    this.bagPopup = new BagPopup(this);
     this.bottomNavBar = new BottomNavBar(this, 1100, this.onNavButtonClicked.bind(this));
 
     // === Inventory Box ===
@@ -48,7 +52,7 @@ export default class InventoryScene extends Phaser.Scene {
     const startGridX = centerX - (cols - 1) * (cellWidth / 2);
     const startGridY = centerY - (rows / 2) * cellHeight + 60 + offsetY;
 
-    const itemKeys = ['Char_Cake', 'Char_Snow', 'Char_Pen', 'Char_Happy'];
+    const itemKeys = ['Char_Cake', 'Char_Snow', 'Char_Cat', 'Char_Happy'];
 
     let itemIndex = 0;
 
@@ -72,11 +76,10 @@ export default class InventoryScene extends Phaser.Scene {
   }
 
   onNavButtonClicked(label) {
-    console.log(this.scene.key, '- button clicked:', label);
-
-    // hide all popups first (safe reset)
     if (this.collectionPopup) this.collectionPopup.hidePopup();
     if (this.storePopup) this.storePopup.hide();
+    if (this.themePopup) this.themePopup.hide();
+    if (this.bagPopup) this.bagPopup.hide();
 
     switch (label) {
       case '도감':
@@ -87,9 +90,12 @@ export default class InventoryScene extends Phaser.Scene {
         if (this.storePopup) this.storePopup.show();
         break;
 
-      // other buttons (optional for now)
       case '가방':
+        if (this.bagPopup) this.bagPopup.show();
+        break;
+
       case '장식장':
+        if (this.themePopup) this.themePopup.show();
         break;
     }
   }
