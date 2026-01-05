@@ -19,6 +19,8 @@ export default class PartTimeScene extends Phaser.Scene {
 
   preload() {
     this.load.image("LargeClickButton", "assets/LargeClickButton.png");
+    this.load.image("LargeClickButton_clicked", "assets/LargeClickButton_clicked.png");
+    this.load.image("partTime_img", "assets/partTime_img.png");
   }
 
   create() {
@@ -33,23 +35,36 @@ export default class PartTimeScene extends Phaser.Scene {
     new TopButtonBar(this, cx - 240, 40);
 
     // === Three small boxes ===
-    let boxStartX = cx - 155;
+    let boxStartX = cx - 160;
     for (let i = 0; i < 3; i++) {
-      // i * gap, up/down, size 40x40
-      this.add.rectangle(boxStartX + i * 60, 300, 40, 40, 0xcccccc)
+      this.add.rectangle(boxStartX + i * 50, 150, 40, 40, 0xcccccc)
         .setStrokeStyle(2, 0x000000)
         .setOrigin(0.5);
     }
 
-    // === Large Image Frame ===
-    this.frame = new PartTimeFrame(this, cx, cy - 100, 350, 500);
+    // === Part-time image inside frame ===
+    this.partTimeImage = this.add.sprite(cx, cy - 180, 'partTime_img')
+      .setOrigin(0.5)
+      .setScale(1.45);
 
     // === Heart in top-right of frame ===
-    this.heart = new HeartButton(this, cx + 160, cy - 330);
+    this.heart = new HeartButton(this, cx + 180, cy - 570);
 
     // === CLICK Button ===
-    this.largeBtn = new LargeClickButton(this, cx, cy + 230, () => {
-      console.log("Large button clicked!");
+    this.largeBtn = this.add.sprite(cx, cy + 230, 'LargeClickButton')
+      .setOrigin(0.5).setScale(1.45)
+      .setInteractive({ useHandCursor: true });
+
+    this.largeBtn.on('pointerdown', () => {
+      this.largeBtn.setTexture('LargeClickButton_clicked');
+    });
+
+    this.largeBtn.on('pointerup', () => {
+      this.largeBtn.setTexture('LargeClickButton');
+    });
+
+    this.largeBtn.on('pointerdown', () => {
+      // Your click logic here
     });
 
     this.collectionPopup = new CollectionPopup(this);
@@ -92,5 +107,4 @@ export default class PartTimeScene extends Phaser.Scene {
         break;
     }
   }
-
 }
