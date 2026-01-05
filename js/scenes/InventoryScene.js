@@ -24,7 +24,7 @@ export default class InventoryScene extends Phaser.Scene {
 
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
-    const offsetY = 0;
+    const offsetY = -100;
 
     // === UI Components ===
     const startX = centerX - 240;
