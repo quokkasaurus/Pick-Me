@@ -18,20 +18,20 @@ export default class StartScene extends Phaser.Scene {
 
     this.cameras.main.setBackgroundColor('#ffffff');
 
-    const logo = this.add.sprite(centerX, centerY - 120, 'start_logo').setOrigin(0.5);
+    const logo = this.add.sprite(centerX, centerY - 200, 'start_logo').setOrigin(0.5).setScale(1.5);
 
-    const startButton = this.add.sprite(centerX, centerY + 160, 'start_button').setOrigin(0.5).setInteractive();
+    const startButton = this.add.sprite(centerX, centerY + 200, 'start_button').setOrigin(0.5).setScale(1.50).setInteractive();
 
     startButton.on('pointerdown', () => {
       this.scene.start('GameScene');
     });
 
     startButton.on('pointerover', () => {
-      startButton.setScale(1.1);
+      startButton.setScale(1.50);
     });
 
     startButton.on('pointerout', () => {
-      startButton.setScale(1.0);
+      startButton.setScale(1.45);
     });
   }
 
