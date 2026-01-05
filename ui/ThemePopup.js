@@ -134,23 +134,91 @@ export default class ThemePopup {
         this.showSelectedPopup();
       });
 
+      const btnLabel = scene.add.text(
+        btn.x,
+        btn.y,
+        '변경하기',
+        {
+          fontSize: '18px',
+          color: '#000000',
+          fontFamily: 'DoveMayo',   // or 'DoveMayoBold' if you want bold
+          align: 'center'
+        }
+      ).setOrigin(0.5);
+
+      // Optional: make clicking the text also trigger the button
+      btnLabel.setInteractive({ useHandCursor: true });
+      btnLabel.on('pointerdown', () => btn.emit('pointerdown'));
+
+
       this.themeListContainer.add(rect);
 
+      // --- rect1: REPLACE theme_basic.png with text blocks ---
       if (themeId === 'rect1') {
-        const innerImgX = btnX - 200;
-        const innerImg = scene.add.image(innerImgX, y, 'theme_basic')
-        .setScale(2.0);
-        this.themeListContainer.add(innerImg);
+        const textLeftX = rect.x - rect.displayWidth / 2 + 30;
+
+        const titleText = scene.add.text(
+          textLeftX,
+          y - 40,
+          '기본 장식장',
+          {
+            fontSize: '22px',
+            color: '#000000',
+            fontFamily: 'DoveMayoBold',
+            align: 'left'
+          }
+        ).setOrigin(0, 0.5);
+
+        const descText = scene.add.text(
+          textLeftX,
+          y + 20,
+          '설명설명설명 설명설명설명 설명설명설명 설명설명설명\n설명설명설명 설명설명설명',
+          {
+            fontSize: '18px',
+            color: '#000000',
+            fontFamily: 'DoveMayo',
+            align: 'left',
+            wordWrap: { width: rect.displayWidth * 0.55 }
+          }
+        ).setOrigin(0, 0.5);
+
+        this.themeListContainer.add([titleText, descText]);
       }
 
+      // --- rect2: REMOVE theme_summer.png, REPLACE with text blocks ---
       if (themeId === 'rect2') {
-        const innerImgX = btnX - 200;
-        const innerImg = scene.add.image(innerImgX, y, 'theme_summer')
-        .setScale(2.0);
-        this.themeListContainer.add(innerImg);
+        const textLeftX = rect.x - rect.displayWidth / 2 + 30;
+
+        const titleText = scene.add.text(
+          textLeftX,
+          y - 40,
+          '여름 장식장',
+          {
+            fontSize: '22px',
+            color: '#000000',
+            fontFamily: 'DoveMayoBold', // dovemayo_bold.otf (from index.html)
+            align: 'left'
+          }
+        ).setOrigin(0, 0.5);
+
+        const descText = scene.add.text(
+          textLeftX,
+          y + 20,
+          '설명설명설명 설명설명설명 설명설명설명 설명설명설명\n설명설명설명 설명설명설명',
+          {
+            fontSize: '18px',
+            color: '#000000',
+            fontFamily: 'DoveMayo', // dovemayo.otf (from index.html)
+            align: 'left',
+            wordWrap: { width: rect.displayWidth * 0.55 } // similar idea to StorePopup
+          }
+        ).setOrigin(0, 0.5);
+
+        this.themeListContainer.add([titleText, descText]);
       }
-      
+
       this.themeListContainer.add(btn);
+      this.themeListContainer.add(btnLabel);
     };
 
     const createHiddenRect = (y) => {
@@ -165,7 +233,7 @@ export default class ThemePopup {
 
     createHiddenRect(startY);
     createThemeRect(startY + gapY, 'rect1');
-    createThemeRect(startY + gapY * 2, 'rect2');
+    createThemeRect(startY + gapY * 2, 'rect2'); // rect2 now uses texts instead of theme_summer
     createHiddenRect(startY + gapY * 3);
 
     const contentHeight = (gapY * 3) + rowHeight;
@@ -219,8 +287,7 @@ export default class ThemePopup {
     this.selectedContainer.setDepth(960);
     this.selectedContainer.setVisible(false);
 
-    const img = scene.add.image(centerX, centerY, 'theme_selected')
-    .setScale(2);
+    const img = scene.add.image(centerX, centerY, 'theme_selected').setScale(2);
 
     const yesBtn = scene.add.image(
       img.x + img.displayWidth / 2 - 30,
