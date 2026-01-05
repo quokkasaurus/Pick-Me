@@ -9,7 +9,6 @@ import BagPopup from '/ui/BagPopup.js';
 import CategoryButton from '/ui/CategoryButton.js';
 import CategoryButtonGroup from '/ui/CategoryButtonGroup.js';
 import CoinBar from '/ui/CoinBar.js';
-import BootScene from '/ui/BootScene.js';
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
