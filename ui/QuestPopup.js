@@ -22,7 +22,6 @@ export default class QuestPopup {
       this.timerEvent = null;
     }
 
-    // Calculate center for popup
     const cam = this.scene.cameras.main;
     const centerX = cam.centerX;
     const centerY = cam.centerY;
@@ -57,7 +56,10 @@ export default class QuestPopup {
     const progressBarWidth = 260;
     const progressBarHeight = 13;
     const iconSize = 70;
-    const gap = 18; // spacing between boxes
+    const gap = 18;
+
+    // NEW: add a slight vertical gap between title text and progress bar
+    const textToBarGap = 6; // try 4~10 for your preferred spacing
 
     // === Shared text styles (DoveMayo) ===
     const styleTimer = { fontSize: '18px', color: '#444', fontFamily: 'DoveMayo' };
@@ -65,7 +67,7 @@ export default class QuestPopup {
     const styleLg = { fontSize: `${fontLg}px`, color: '#222222', fontFamily: 'DoveMayo' };
     const styleLgBold = { fontSize: `${fontLg}px`, color: '#222222', fontFamily: 'DoveMayoBold' };
 
-    // Blocker (cover full screen, not just bg size)
+    // Blocker (cover full screen)
     const blocker = this.scene.add.rectangle(
       0,
       0,
@@ -77,7 +79,7 @@ export default class QuestPopup {
 
     this.popup.add(blocker);
 
-    // Popup background image (same as Mail / Notice)
+    // Popup background
     const bg = this.scene.add.image(0, 0, 'popup_bg1')
       .setOrigin(0.5)
       .setDisplaySize(bgWidth, bgHeight);
@@ -99,7 +101,6 @@ export default class QuestPopup {
       12,
       0xffffff
     ).setStrokeStyle(1, 0x444444);
-
     this.popup.add(timerIcon);
 
     // Timer update (KST)
@@ -168,25 +169,28 @@ export default class QuestPopup {
         const questBg = this.scene.add.image(0, baseY, 'quest_bg1')
           .setOrigin(0.5)
           .setDisplaySize(questBoxWidth, weeklyBoxHeight);
-
         this.popup.add(questBg);
 
-        // "월요일 보상"
+        // "월요일 보상" (white only)
         this.popup.add(
-          this.scene.add.text(0, baseY - weeklyBoxHeight / 2 + 20, '월요일 보상', styleMd)
-            .setOrigin(0.5)
+          this.scene.add.text(0, baseY - weeklyBoxHeight / 2 + 20, '월요일 보상', {
+            ...styleMd,
+            color: '#ffffff'
+          }).setOrigin(0.5)
         );
 
-        // Title (centered below)
+        // Title (centered)
         this.popup.add(
           this.scene.add.text(0, baseY - weeklyBoxHeight / 2 + 42, quest.title, styleLgBold)
             .setOrigin(0.5, 0)
         );
 
-        // Progress bar
+        // Progress bar (moved DOWN slightly by textToBarGap)
+        const pbY = baseY + 25 + textToBarGap;
+
         const pbBg = this.scene.add.rectangle(
           -questBoxWidth / 2 + 40,
-          baseY + 25,
+          pbY,
           progressBarWidth,
           progressBarHeight,
           0xffffff
@@ -196,7 +200,7 @@ export default class QuestPopup {
         const progress = Math.max(0, Math.min(1, quest.curValue / quest.goalValue));
         const pbFill = this.scene.add.rectangle(
           -questBoxWidth / 2 + 40,
-          baseY + 25,
+          pbY,
           progress * progressBarWidth,
           progressBarHeight,
           0x000000
@@ -252,10 +256,12 @@ export default class QuestPopup {
             .setOrigin(0, 0.5)
         );
 
-        // Progress bar
+        // Progress bar (moved DOWN slightly by textToBarGap)
+        const pbY = baseY + 18 + textToBarGap;
+
         const pbBg = this.scene.add.rectangle(
           -questBoxWidth / 2 + 40,
-          baseY + 18,
+          pbY,
           progressBarWidth,
           progressBarHeight,
           0xffffff
@@ -265,7 +271,7 @@ export default class QuestPopup {
         const progress = Math.max(0, Math.min(1, quest.curValue / quest.goalValue));
         const pbFill = this.scene.add.rectangle(
           -questBoxWidth / 2 + 40,
-          baseY + 18,
+          pbY,
           progress * progressBarWidth,
           progressBarHeight,
           0x000000
@@ -305,7 +311,7 @@ export default class QuestPopup {
       }
     });
 
-    // --- X Button Bottom Left Using Image ---
+    // --- X Button Bottom Left ---
     const xBtnSize = 38;
     const closeBtn = this.scene.add.image(
       -bgWidth / 1.9 + xBtnSize,
