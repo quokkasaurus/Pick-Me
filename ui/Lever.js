@@ -77,7 +77,7 @@ export default class Lever {
             .setInteractive({ useHandCursor: true });
 
         this.scene.add.text(centerX + 190, 1180, '10회 뽑기',
-            { fontSize: '30px',fontFamily: 'DoveMayo', color: '#222' }).setOrigin(0.5);
+            { fontSize: '30px', fontFamily: 'DoveMayo', color: '#222' }).setOrigin(0.5);
 
         rightLeverImg.on('pointerdown', () => this.handleRightLeverClick());
 
@@ -111,7 +111,7 @@ export default class Lever {
             this.showLeftLeverPopup("Lever Turn", "레버를 돌리는 중...");
             this.leverState = 1;
         } else if (this.leverState === 1) {
-            this.showLeftLeverPopup("Capsule Open", "캡슐이 열리는 중...");
+            this.showLeftLeverPopup("Capsule_Red", "캡슐이 열리는 중...");
             this.leverState = 2;
         } else if (this.leverState === 2) {
             const isPity = this.pityCounter >= this.maxPity;
@@ -129,33 +129,53 @@ export default class Lever {
 
         // Map image key
         const imgKey = imageName === "Lever Turn" ? "LeftLever" :
-            imageName === "Capsule Open" ? "CapsuleOpen" :
-                imageName === "Gacha Result" ? this.gachaResults[0] : imageName;
+            imageName === "Capsule_Yellow" ? "Capsule_Yellow" :
+                imageName === "Capsule_Red" ? "Capsule_Red" :
+                    imageName === "Gacha Result" ? this.gachaResults[0] : imageName;
 
-        // Optional background for result
+        // If it's result, add background first (behind character)
+        let bg;
         if (imageName === "Gacha Result") {
-            const bg = this.scene.add.rectangle(0, 0, 320, 320, 0xffcce2)
-                .setStrokeStyle(2, 0x000000);
+            bg = this.scene.add.image(0, 0, 'result_bg')
+                .setOrigin(0.5)
+                .setDisplaySize(400, 400);
             this.popup.add(bg);
         }
 
-        const img = this.scene.add.image(0, 0, imgKey).setDisplaySize(160, 160);
-        this.popup.add(img);
+        // Choose size by type
+        let width = 300;
+        let height = 300;
+
+        if (imageName === "Capsule_Red" || imageName === "Capsule_Yellow") {
+            // make capsule bigger
+            width = 400;      // try 400~450
+            height = 400;
+        } else if (imageName === "Gacha Result") {
+            // character slightly smaller than capsule
+            width = 260;
+            height = 260;
+        }
+
+        const mainImg = this.scene.add.image(0, 0, imgKey).setDisplaySize(width, height);
+        this.popup.add(mainImg);
 
         if (imageName === "Gacha Result") {
-            const confirmBtn = this.scene.add.rectangle(0, 120, 120, 40, 0xdddddd)
+            // 3) Confirm button
+            const confirmBtn = this.scene.add.image(0, 120, 'lever_confirm_button')
+                .setOrigin(0.5)
                 .setInteractive({ useHandCursor: true });
-            const confirmBtnText = this.scene.add.text(0, 120, '확인', { fontSize: '20px', color: '#111' }).setOrigin(0.5);
+
             this.popup.add(confirmBtn);
-            this.popup.add(confirmBtnText);
+
             confirmBtn.on('pointerdown', () => {
                 this.popup.destroy();
                 this.popup = null;
                 this.leverState = 0;
             });
         } else {
-            img.setInteractive({ useHandCursor: true });
-            img.on('pointerdown', () => {
+            // For non-result images, click to go to next step
+            mainImg.setInteractive({ useHandCursor: true });
+            mainImg.on('pointerdown', () => {
                 this.popup.destroy();
                 this.popup = null;
                 this.handleLeftLeverClick();
@@ -168,7 +188,7 @@ export default class Lever {
         if (this.popup) return;
 
         const characters = this.characters;
-        const capsuleColors = ['CapsuleOpen_Yellow', 'CapsuleOpen_Blue'];
+        const capsuleColors = ['Capsule_Yellow', 'Capsule_Green', 'Capsule_Red'];
         this.gachaResults = [];
         this.gachaCapsules = [];
         let guaranteeUsed = false;
@@ -192,9 +212,9 @@ export default class Lever {
 
         // Show initial lever animation
         const centerX = this.scene.cameras.main.centerX;
-        const centerY = 600;
+        const centerY = this.scene.cameras.main.centerX;
         this.popup = this.scene.add.container(centerX, centerY);
-        const leverImg = this.scene.add.image(0, 0, 'RightLever').setDisplaySize(160, 160).setInteractive({ useHandCursor: true });
+        const leverImg = this.scene.add.image(0, 0, 'RightLever').setDisplaySize(220, 220).setInteractive({ useHandCursor: true });
         this.popup.add(leverImg);
 
         leverImg.once('pointerdown', () => {
@@ -215,14 +235,14 @@ export default class Lever {
         }
 
         const centerX = this.scene.cameras.main.centerX;
-        const centerY = 600;
+        const centerY = this.scene.cameras.main.centerY;
         this.popup = this.createPopupWithOverlay(centerX, centerY);
 
         const idx = this.currentCapsuleIndex;
         const capsuleKey = this.gachaCapsules[idx];
         const charKey = this.gachaResults[idx];
 
-        const capsuleImg = this.scene.add.image(0, -200, capsuleKey).setDisplaySize(180, 180);
+        const capsuleImg = this.scene.add.image(0, -200, capsuleKey).setDisplaySize(400, 400);
         this.popup.add(capsuleImg);
 
         this.scene.tweens.add({
@@ -233,7 +253,7 @@ export default class Lever {
                 capsuleImg.setInteractive({ useHandCursor: true });
                 capsuleImg.once('pointerdown', () => {
                     capsuleImg.setVisible(false);
-                    const charImg = this.scene.add.image(0, 0, charKey).setDisplaySize(180, 180);
+                    const charImg = this.scene.add.image(0, 0, charKey).setDisplaySize(220, 220);
                     this.popup.add(charImg);
                     charImg.setInteractive({ useHandCursor: true });
 
@@ -254,9 +274,9 @@ export default class Lever {
 
     showRightLeverPopup() {
         this.createPopupWithOverlay();
-
-        const bg = this.scene.add.rectangle(0, 0, 340, 370, 0xffcce2)
-            .setStrokeStyle(2, 0x000000);
+        const bg = this.scene.add.image(0, 0, 'result_bg')
+            .setOrigin(0.5)
+            .setDisplaySize(400, 400);
         this.popup.add(bg);
 
         // Display characters grid
@@ -264,28 +284,26 @@ export default class Lever {
         let itemIndex = 0;
         for (let row = 0; row < rowSizes.length; row++) {
             const itemsInRow = rowSizes[row];
-            const rowWidth = (itemsInRow - 1) * 60;
+            const rowWidth = (itemsInRow - 1) * 90;
             const startX = -rowWidth / 2;
 
             for (let col = 0; col < itemsInRow; col++) {
                 if (itemIndex >= this.gachaResults.length) break;
-                const x = startX + col * 60;
-                const y = -100 + row * 90;
+                const x = startX + col * 90;
+                const y = -130 + row * 130;
                 const char = this.scene.add.image(x, y, this.gachaResults[itemIndex]);
-                char.setDisplaySize(80, 80);
+                char.setDisplaySize(100, 100);
                 this.popup.add(char);
                 itemIndex++;
             }
         }
 
-        // Confirm button
-        const confirmBtn = this.scene.add.rectangle(0, 155, 120, 44, 0xdddddd)
-            .setInteractive({ useHandCursor: true })
-            .setStrokeStyle(2, 0x000000);
-        const confirmBtnText = this.scene.add.text(0, 155, '확인', { fontSize: '20px', color: '#111' }).setOrigin(0.5);
-        this.popup.add(confirmBtn);
-        this.popup.add(confirmBtnText);
+        // Confirm button image
+        const confirmBtn = this.scene.add.image(0, 170, 'lever_confirm_button')
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
 
+        this.popup.add(confirmBtn);
         confirmBtn.on('pointerdown', () => {
             this.popup.destroy();
             this.popup = null;
