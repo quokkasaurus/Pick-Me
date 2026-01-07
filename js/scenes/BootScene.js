@@ -15,11 +15,13 @@ export default class BootScene extends Phaser.Scene {
         this.load.image('LeftLever', 'assets/LeftLever.png');
         this.load.image('RightLever', 'assets/RightLever.png');
         this.load.image("LeverDefault", "assets/game_lever_default.png");
-        this.load.image('CapsuleDrop', 'assets/CapsuleDrop.png');
-        this.load.image('CapsuleOpen',                             'assets/CapsuleOpen.png');
-        this.load.image('CapsuleOpen_Yellow', 'assets/CapsuleOpen_Yellow.png');
+        this.load.image('Capsule_Red', 'assets/Capsule_Red.png');
+        this.load.image('Capsule_Green','assets/Capsule_Green.png');
+        this.load.image('Capsule_Yellow', 'assets/Capsule_Yellow.png');
         this.load.image('CapsuleOpen_Blue', 'assets/CapsuleOpen_Blue.png');
         this.load.image('GachaResult', 'assets/GachaResult.png');
+        this.load.image('lever_confirm_button', 'assets/lever_confirm_button.png');
+         this.load.image('result_bg', 'assets/result_bg.png');
         //Characters
 
         this.load.image('Char_Snow', 'assets/Char_Snow.png');
