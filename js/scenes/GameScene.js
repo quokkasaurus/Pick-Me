@@ -28,6 +28,10 @@ export default class GameScene extends Phaser.Scene {
     } else {
       this.bgm = this.sound.get('mainBGM');
     }
+    this.sfxVolume = 1.0;
+    this.musicVolume = 1.0;
+    // Set BGM volume explicitly (ignores global)
+    this.bgm.setVolume(this.musicVolume);
 
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY
