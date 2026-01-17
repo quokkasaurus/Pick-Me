@@ -166,6 +166,8 @@ export default class BootScene extends Phaser.Scene {
         this.load.image('bag_choose_cancel', 'assets/bag_choose_cancel.png');
         // BGM
         this.load.audio('mainBGM', 'assets/audio/mainBGM.mp3');
+        //Sound
+         this.load.audio('CapsuleOpen', 'assets/audio/CapsuleOpen.mp3');
     }
 
     create() {
