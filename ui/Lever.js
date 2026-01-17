@@ -150,6 +150,7 @@ export default class Lever {
             // make capsule bigger
             width = 400;      // try 400~450
             height = 400;
+            this.scene.sound.play('CapsuleOpen');
         } else if (imageName === "Gacha Result") {
             // character slightly smaller than capsule
             width = 400;
@@ -256,6 +257,7 @@ export default class Lever {
                 capsuleImg.setInteractive({ useHandCursor: true });
                 capsuleImg.once('pointerdown', () => {
                     capsuleImg.setVisible(false);
+                    this.scene.sound.play('CapsuleOpen');
                     const charImg = this.scene.add.image(0, 0, charKey).setDisplaySize(400, 400);
                     this.popup.add(charImg);
                     charImg.setInteractive({ useHandCursor: true });
