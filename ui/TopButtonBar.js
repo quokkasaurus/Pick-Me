@@ -1,8 +1,8 @@
 import * as Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.esm.js';
-import QuestPopup from '/ui/QuestPopup.js';
-import MailPopup from '/ui/MailPopup.js';
-import SettingPopup from '/ui/SettingPopup.js';
-import NoticePopup from '/ui/NoticePopup.js';
+import QuestPopup from './QuestPopup.js';
+import MailPopup from './MailPopup.js';
+import SettingPopup from './SettingPopup.js';
+import NoticePopup from './NoticePopup.js';
 
 // TopButtonBar.js
 

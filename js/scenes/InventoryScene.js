@@ -1,11 +1,11 @@
 import * as Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.esm.js';
-import TopButtonBar from '/ui/TopButtonBar.js';
-import CollectionPopup from '/ui/CollectionPopup.js';
-import StorePopup from '/ui/StorePopup.js';
-import BottomNavBar from '/ui/BottomNavBar.js';
-import ThemePopup from '/ui/ThemePopup.js';
-import BagPopup from '/ui/BagPopup.js';
-import CoinBar from '/ui/CoinBar.js';
+import TopButtonBar from '../../ui/TopButtonBar.js';
+import CollectionPopup from '../../ui/CollectionPopup.js';
+import StorePopup from '../../ui/StorePopup.js';
+import BottomNavBar from '../../ui/BottomNavBar.js';
+import ThemePopup from '../../ui/ThemePopup.js';
+import BagPopup from '../../ui/BagPopup.js';
+import CoinBar from '../../ui/CoinBar.js';
 
 export default class InventoryScene extends Phaser.Scene {
   constructor() {

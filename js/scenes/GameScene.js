@@ -1,14 +1,15 @@
 import * as Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.esm.js';
-import TopButtonBar from '/ui/TopButtonBar.js';
-import BottomNavBar from '/ui/BottomNavBar.js';
-import Lever from '/ui/Lever.js';
-import StorePopup from '/ui/StorePopup.js';
-import CollectionPopup from '/ui/CollectionPopup.js';
-import ThemePopup from '/ui/ThemePopup.js';
-import BagPopup from '/ui/BagPopup.js';
-import CategoryButton from '/ui/CategoryButton.js';
-import CategoryButtonGroup from '/ui/CategoryButtonGroup.js';
-import CoinBar from '/ui/CoinBar.js';
+
+import TopButtonBar from '../../ui/TopButtonBar.js';
+import BottomNavBar from '../../ui/BottomNavBar.js';
+import Lever from '../../ui/Lever.js';
+import StorePopup from '../../ui/StorePopup.js';
+import CollectionPopup from '../../ui/CollectionPopup.js';
+import ThemePopup from '../../ui/ThemePopup.js';
+import BagPopup from '../../ui/BagPopup.js';
+import CategoryButton from '../../ui/CategoryButton.js';
+import CategoryButtonGroup from '../../ui/CategoryButtonGroup.js';
+import CoinBar from '../../ui/CoinBar.js';
 
 export default class GameScene extends Phaser.Scene {
   constructor() {

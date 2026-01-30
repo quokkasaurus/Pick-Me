@@ -1,17 +1,17 @@
 import * as Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.esm.js';
 
-import TopButtonBar from '/ui/TopButtonBar.js';
-import BottomNavBar from '/ui/BottomNavBar.js';
-import PartTimeFrame from '/ui/PartTimeFrame.js';
-import HeartButton from '/ui/HeartButton.js';
-import LargeClickButton from '/ui/LargeClickButton.js';
-import CoinBar from '/ui/CoinBar.js';
+import TopButtonBar from '../../ui/TopButtonBar.js';
+import BottomNavBar from '../../ui/BottomNavBar.js';
+import PartTimeFrame from '../../ui/PartTimeFrame.js';
+import HeartButton from '../../ui/HeartButton.js';
+import LargeClickButton from '../../ui/LargeClickButton.js';
+import CoinBar from '../../ui/CoinBar.js';
 
 // bottom nav bar
-import CollectionPopup from '/ui/CollectionPopup.js';
-import StorePopup from '/ui/StorePopup.js';
-import ThemePopup from '/ui/ThemePopup.js';
-import BagPopup from '/ui/BagPopup.js';
+import CollectionPopup from '../../ui/CollectionPopup.js';
+import StorePopup from '../../ui/StorePopup.js';
+import ThemePopup from '../../ui/ThemePopup.js';
+import BagPopup from '../../ui/BagPopup.js';
 
 export default class PartTimeScene extends Phaser.Scene {
   constructor() {
