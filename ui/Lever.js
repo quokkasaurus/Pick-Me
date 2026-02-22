@@ -21,7 +21,7 @@ export default class Lever {
     this.onProgressUpdate = null;
 
     this.characters = [
-      'char_snow', 'char_angryStar', 'char_angryStar2', 'char_doughnut', 'char_egg',
+      'Char_Snow', 'char_angryStar', 'char_angryStar2', 'char_doughnut', 'char_egg',
       'char_frustStar', 'char_ghost', 'char_happyStar', 'char_icecream',
       'char_laughStar', 'char_mugChoco', 'char_pen', 'char_ruler',
       'char_skeleton', 'char_starCandy', 'char_sushi', 'char_worryStar',
