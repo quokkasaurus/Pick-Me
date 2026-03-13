@@ -2,8 +2,9 @@
 import * as Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.esm.js';
 
 export default class BagPopup {
-    constructor(scene) {
+    constructor(scene, onCombineClick) {
         this.scene = scene;
+        this.onCombineClick = onCombineClick;
 
         this.container = null;
 
@@ -209,6 +210,20 @@ export default class BagPopup {
             this.subPopupContainer.setVisible(false);
         });
 
+        const combineBtn = scene.add.image(
+            img.x + img.displayWidth / 2 - 260,   // adjust X so it sits left of sellBtn
+            img.y + img.displayHeight / 2 - 40,
+            'bag_item_combine'
+        )
+            .setScale(1.6)
+            .setInteractive({ useHandCursor: true });
+
+        combineBtn.on('pointerdown', () => {
+            if (this.onCombineClick) {
+                this.onCombineClick();
+            }
+        });
+
         const sellBtn = scene.add.image(
             img.x + img.displayWidth / 2 - 100,
             img.y + img.displayHeight / 2 - 40,
@@ -227,7 +242,7 @@ export default class BagPopup {
             this.confirmSellContainer.setVisible(true);
         });
 
-        this.subPopupContainer.add([img, showSell, rankLabel, exitBtn, sellBtn]);
+        this.subPopupContainer.add([img, showSell, rankLabel, exitBtn, combineBtn, sellBtn]);
     }
 
     // ---------- CONFIRM SELL ----------
