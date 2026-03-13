@@ -10,7 +10,7 @@ export default class BootScene extends Phaser.Scene {
         // Preload ALL GameScene assets here (images, audio, atlases)
         //Lever
         this.load.image('game_default', 'assets/game_default.png');
-        this.load.image('game_default2', 'assets/game_default2.png');
+        this.load.image('game_default1', 'assets/game_default1.png');
         this.load.image('game_lever_default', 'assets/game_lever_default.png');
         this.load.image('LeftLever', 'assets/LeftLever.png');
         this.load.image('RightLever', 'assets/RightLever.png');
