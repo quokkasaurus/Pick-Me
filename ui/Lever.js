@@ -171,9 +171,9 @@ export default class Lever {
 
     const imgKey =
       imageName === 'Lever Turn' ? 'LeftLever' :
-      imageName === 'Capsule_Yellow' ? 'Capsule_Yellow' :
-      imageName === 'Capsule_Red' ? 'Capsule_Red' :
-      imageName === 'Gacha Result' ? this.gachaResults[0] : imageName;
+        imageName === 'Capsule_Yellow' ? 'Capsule_Yellow' :
+          imageName === 'Capsule_Red' ? 'Capsule_Red' :
+            imageName === 'Gacha Result' ? this.gachaResults[0] : imageName;
 
     if (imageName === 'Gacha Result') {
       const bg = this.scene.add.image(0, 0, 'result_bg')
@@ -190,14 +190,17 @@ export default class Lever {
       height = 400;
       this.scene.sound.play('CapsuleOpen', { volume: this.scene.sfxVolume || 1.0 });
     } else if (imageName === 'Gacha Result') {
-      width = 400;
-      height = 400;
-    }
 
-    const mainImg = this.scene.add.image(0, 0, imgKey).setDisplaySize(width, height);
-    this.popup.add(mainImg);
+      const charContainer = this.scene.add.container(0, 0);
+      const frame = this.scene.add.image(0, 0, 'GachaResult')
+        .setScale(4.2);
 
-    if (imageName === 'Gacha Result') {
+      const char = this.scene.add.image(0, 0, this.gachaResults[0])
+        .setDisplaySize(360, 360);
+
+      charContainer.add([frame, char]);
+      this.popup.add(charContainer);
+
       const confirmBtn = this.scene.add.image(0, 300, 'lever_confirm_button')
         .setOrigin(0.5)
         .setInteractive({ useHandCursor: true });
@@ -209,6 +212,13 @@ export default class Lever {
         this.popup = null;
         this.leverState = 0;
       });
+      return;
+    }
+    const mainImg = this.scene.add.image(0, 0, imgKey).setDisplaySize(width, height);
+    this.popup.add(mainImg);
+
+    if (imageName === 'Gacha Result') {
+      // this won't run anymore because of early return above
     } else {
       mainImg.setInteractive({ useHandCursor: true });
       mainImg.on('pointerdown', () => {
@@ -287,21 +297,30 @@ export default class Lever {
       onComplete: () => {
         capsuleImg.setInteractive({ useHandCursor: true });
         capsuleImg.once('pointerdown', () => {
-          capsuleImg.setVisible(false);
+          capsuleImg.destroy();
 
           this.scene.sound.play('CapsuleOpen', { volume: this.scene.sfxVolume || 1.0 });
 
-          const charImg = this.scene.add.image(0, 0, charKey).setDisplaySize(400, 400);
-          this.popup.add(charImg);
+          const charContainer = this.scene.add.container(0, 0);
+          const frame = this.scene.add.image(0, 0, 'GachaResult').setScale(4.2);
+          const charImg = this.scene.add.image(0, 0, charKey).setDisplaySize(360, 360);
 
-          charImg.setInteractive({ useHandCursor: true });
-          charImg.once('pointerdown', () => {
+          charContainer.add([frame, charImg]);
+          this.popup.add(charContainer);
+
+          // Make the frame clickable instead of the container
+          frame.setInteractive({ useHandCursor: true });
+
+          frame.once('pointerdown', () => {
             this.popup.destroy(true);
             this.popup = null;
-
             this.currentCapsuleIndex++;
-            if (this.currentCapsuleIndex < 10) this.revealCapsulesOneByOne();
-            else this.showRightLeverPopup();
+
+            if (this.currentCapsuleIndex < 10) {
+              this.revealCapsulesOneByOne();
+            } else {
+              this.showRightLeverPopup();
+            }
           });
         });
       }
@@ -313,14 +332,14 @@ export default class Lever {
 
     const bg = this.scene.add.image(0, 0, 'result_bg')
       .setOrigin(0.5)
-      .setDisplaySize(600, 700);
+      .setDisplaySize(700, 900);
     this.popup.add(bg);
 
     const rowSizes = [4, 4, 2];
     let itemIndex = 0;
-    const itemSpacingX = 140;
-    const itemSpacingY = 150;
-    const startY = -150;
+    const itemSpacingX = 160;
+    const itemSpacingY = 250;
+    const startY = -250;
 
     for (let row = 0; row < rowSizes.length; row++) {
       const itemsInRow = rowSizes[row];
@@ -332,13 +351,25 @@ export default class Lever {
         if (itemIndex >= this.gachaResults.length) break;
 
         const x = startX + col * itemSpacingX;
-        const char = this.scene.add.image(x, y, this.gachaResults[itemIndex]).setDisplaySize(200, 200);
-        this.popup.add(char);
+        const charKey = this.gachaResults[itemIndex];
+
+        // container for one result (frame + character)
+        const cell = this.scene.add.container(x, y);
+
+        // frame/background with grade label
+        const frame = this.scene.add.image(0, 0, 'GachaResult')
+          .setDisplaySize(150, 180); // slightly larger than char
+        const char = this.scene.add.image(0, 0, charKey)
+          .setDisplaySize(140, 150);
+
+        cell.add([frame, char]);
+
+        this.popup.add(cell);
         itemIndex++;
       }
     }
 
-    const confirmBtn = this.scene.add.image(0, 260, 'lever_confirm_button')
+    const confirmBtn = this.scene.add.image(0, 400, 'lever_confirm_button')
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
