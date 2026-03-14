@@ -10,7 +10,7 @@ export default class BootScene extends Phaser.Scene {
         // Preload ALL GameScene assets here (images, audio, atlases)
         //Lever
         this.load.image('game_default', 'assets/game_default.png');
-        this.load.image('game_default2', 'assets/game_default2.png');
+        this.load.image('game_default1', 'assets/game_default1.png');
         this.load.image('game_lever_default', 'assets/game_lever_default.png');
         this.load.image('LeftLever', 'assets/LeftLever.png');
         this.load.image('RightLever', 'assets/RightLever.png');
@@ -24,18 +24,18 @@ export default class BootScene extends Phaser.Scene {
         this.load.image('result_bg', 'assets/result_bg.png');
         //Characters
 
-        this.load.image('char_snow', 'assets/char_snow.png');
+        this.load.image('Char_Snow', 'assets/Char_Snow.png');
         this.load.image('char_angryStar', 'assets/char_angryStar.png');
         this.load.image('char_angryStar2', 'assets/char_angryStar2.png');
         this.load.image('char_doughnut', 'assets/char_doughnut.png');
-        this.load.image('char_egg', 'assets/char_egg.png');
+        this.load.image('char_egg', 'assets/삶은 계란.png');
         this.load.image('char_frustStar', 'assets/char_frustStar.png');
         this.load.image('char_ghost', 'assets/char_ghost.png');
         this.load.image('char_happyStar', 'assets/char_happyStar.png');
         this.load.image('char_icecream', 'assets/char_icecream.png');
         this.load.image('char_laughStar', 'assets/char_laughStar.png');
         this.load.image('char_mugChoco', 'assets/char_mugChoco.png');
-        this.load.image('char_pen', 'assets/char_pen.png');
+        this.load.image('char_pen', 'assets/펜.png');
         this.load.image('char_ruler', 'assets/char_ruler.png');
         this.load.image('char_skeleton', 'assets/char_skeleton.png');
         this.load.image('char_starCandy', 'assets/char_starCandy.png');
@@ -158,14 +158,22 @@ export default class BootScene extends Phaser.Scene {
         this.load.image('bag_item_unite', 'assets/bag_item_unite.png');
         this.load.image('bag_sub_popup', 'assets/bag_sub_popup.png');
         this.load.image('bag_item_sell', 'assets/bag_item_sell.png');
+        this.load.image('bag_item_combine', 'assets/bag_item_combine.png');
         this.load.image('bag_show_sell', 'assets/bag_show_sell.png');
         this.load.image('item_rank_a', 'assets/item_rank_a.png');
         this.load.image('bag_confirm_sell', 'assets/bag_confirm_sell.png');
         this.load.image('bag_getcoin', 'assets/bag_getcoin.png');
         this.load.image('bag_choose_sell', 'assets/bag_choose_sell.png');
         this.load.image('bag_choose_cancel', 'assets/bag_choose_cancel.png');
+        // Bag Combine
+        this.load.image('bag_combine_popup', 'assets/bag_combine_popup.png');
+        this.load.image('bag_combine_pentagon', 'assets/bag_combine_pentagon.png');
+        this.load.image('bag_combine_circle', 'assets/bag_combine_circle.png');
+        this.load.image('bag_combine_button', 'assets/bag_combine_button.png');
+         this.load.image('bag_combine_complete', 'assets/bag_combine_complete.png');
+
         // BGM
-        this.load.audio('mainBGM', 'assets/audio/mainBGM.mp3');
+        this.load.audio('MainBGM', 'assets/audio/MainBGM.mp3');
         //Sound
          this.load.audio('CapsuleOpen', 'assets/audio/CapsuleOpen.mp3');
     }

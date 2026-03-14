@@ -10,6 +10,7 @@ import ThemePopup from '../../ui/ThemePopup.js';
 import BagPopup from '../../ui/BagPopup.js';
 import CategoryButtonGroup from '../../ui/CategoryButtonGroup.js';
 import CoinBar from '../../ui/CoinBar.js';
+import BagCombinePopup from '../../ui/BagCombinePopup.js';
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -20,11 +21,11 @@ export default class GameScene extends Phaser.Scene {
     console.log('Loaded:', this.scene.key);
 
     // --- Audio (guarded) ---
-    if (!this.sound.get('mainBGM') && this.cache.audio.exists('mainBGM')) {
-      this.bgm = this.sound.add('mainBGM', { loop: true, volume: 0.7 });
+    if (!this.sound.get('MainBGM') && this.cache.audio.exists('MainBGM')) {
+      this.bgm = this.sound.add('MainBGM', { loop: true, volume: 0.7 });
       this.bgm.play();
     } else {
-      this.bgm = this.sound.get('mainBGM');
+      this.bgm = this.sound.get('MainBGM');
     }
     this.sfxVolume = 1.0;
     this.musicVolume = 1.0;
@@ -59,7 +60,10 @@ export default class GameScene extends Phaser.Scene {
     this.playerState = { coins: 999999, bagSlots: 20, clickLevel: 1 };
     this.storePopup = new StorePopup(this, this.playerState);
     this.themePopup = new ThemePopup(this);
-    this.bagPopup = new BagPopup(this);
+    this.bagPopup = new BagPopup(this, () => {
+      this.combinePopup.show();
+    });
+    this.combinePopup = new BagCombinePopup(this);
 
     // Progress bar objects
     this.createProgressBar();
@@ -97,7 +101,7 @@ export default class GameScene extends Phaser.Scene {
       const marginRight = 40;
       const marginTop = h * 0.07;
       this.topButtonBar.setRightTop(w - marginRight, marginTop);
-    } 
+    }
 
     // Coin bar
     if (this.coinBar) this.coinBar.setPosition(cam.centerX - w * 0.45, h * 0.07);
@@ -156,7 +160,7 @@ export default class GameScene extends Phaser.Scene {
     if (!this.gachaBg) return;
 
     if (label === 'cat1') this.gachaBg.setTexture('game_default');
-    else if (label === 'cat2') this.gachaBg.setTexture('game_default2');
+    else if (label === 'cat2') this.gachaBg.setTexture('game_default1');
   }
 
   onNavButtonClicked(label) {
